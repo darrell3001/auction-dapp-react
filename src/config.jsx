@@ -1,5 +1,5 @@
 export const SMART_CONTRACT_ADDRESS =
-  "0xb65d2995240ac90d89b52Ebc005f13Ddd8C5BA26";
+  "0x713c98434d7beDa837B36A7158230667856747F7";
 
 export const SMART_CONTRACT_ABI = [
   {
@@ -7,6 +7,31 @@ export const SMART_CONTRACT_ABI = [
     payable: false,
     stateMutability: "nonpayable",
     type: "constructor"
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "id",
+        type: "uint256"
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "currentState",
+        type: "uint256"
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "guid",
+        type: "string"
+      }
+    ],
+    name: "AuctionDeleted",
+    type: "event"
   },
   {
     anonymous: false,
@@ -27,6 +52,12 @@ export const SMART_CONTRACT_ABI = [
         indexed: false,
         internalType: "uint256",
         name: "winningBid",
+        type: "uint256"
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "currentState",
         type: "uint256"
       },
       {
@@ -78,6 +109,12 @@ export const SMART_CONTRACT_ABI = [
         indexed: false,
         internalType: "uint256",
         name: "maxBid",
+        type: "uint256"
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "currentState",
         type: "uint256"
       },
       {
@@ -150,13 +187,7 @@ export const SMART_CONTRACT_ABI = [
       }
     ],
     name: "createNewAuction",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "id",
-        type: "uint256"
-      }
-    ],
+    outputs: [],
     payable: true,
     stateMutability: "payable",
     type: "function"
@@ -175,7 +206,27 @@ export const SMART_CONTRACT_ABI = [
         type: "string"
       }
     ],
-    name: "end",
+    name: "deleteAuction",
+    outputs: [],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    constant: false,
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_id",
+        type: "uint256"
+      },
+      {
+        internalType: "string",
+        name: "_guid",
+        type: "string"
+      }
+    ],
+    name: "endAuction",
     outputs: [],
     payable: false,
     stateMutability: "nonpayable",
@@ -198,6 +249,12 @@ export const SMART_CONTRACT_ABI = [
       },
       {
         indexed: false,
+        internalType: "uint256",
+        name: "currentState",
+        type: "uint256"
+      },
+      {
+        indexed: false,
         internalType: "string",
         name: "guid",
         type: "string"
@@ -213,6 +270,12 @@ export const SMART_CONTRACT_ABI = [
         indexed: false,
         internalType: "uint256",
         name: "id",
+        type: "uint256"
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "currentState",
         type: "uint256"
       },
       {
@@ -256,6 +319,12 @@ export const SMART_CONTRACT_ABI = [
       },
       {
         indexed: false,
+        internalType: "uint256",
+        name: "currentState",
+        type: "uint256"
+      },
+      {
+        indexed: false,
         internalType: "string",
         name: "guid",
         type: "string"
@@ -271,6 +340,12 @@ export const SMART_CONTRACT_ABI = [
         indexed: false,
         internalType: "uint256",
         name: "id",
+        type: "uint256"
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "currentState",
         type: "uint256"
       },
       {
@@ -353,27 +428,6 @@ export const SMART_CONTRACT_ABI = [
         internalType: "uint256",
         name: "",
         type: "uint256"
-      }
-    ],
-    payable: false,
-    stateMutability: "view",
-    type: "function"
-  },
-  {
-    constant: true,
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_id",
-        type: "uint256"
-      }
-    ],
-    name: "timeRemainingInSeconds",
-    outputs: [
-      {
-        internalType: "int256",
-        name: "",
-        type: "int256"
       }
     ],
     payable: false,

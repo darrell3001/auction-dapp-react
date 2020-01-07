@@ -1,40 +1,85 @@
-
-  this.state = {
-    food: {
-      sandwich: {
-        capsicum: true,
-        crackers: true,
-        mayonnaise: true
-      },
-      pizza: {
-        jalapeno: true,
-        extraCheese: false
-      }
-    }
+class BasicTreeData extends React.Component {
+  render() {
+    return (
+      <MaterialTable
+        title="Basic Tree Data Preview"
+        data={[
+          {
+            id: 1,
+            name: 'a',
+            surname: 'Baran',
+            birthYear: 1987,
+            birthCity: 63,
+            sex: 'Male',
+            type: 'adult',
+          },
+          {
+            id: 2,
+            name: 'b',
+            surname: 'Baran',
+            birthYear: 1987,
+            birthCity: 34,
+            sex: 'Female',
+            type: 'adult',
+            parentId: 1,
+          },
+          {
+            id: 3,
+            name: 'c',
+            surname: 'Baran',
+            birthYear: 1987,
+            birthCity: 34,
+            sex: 'Female',
+            type: 'child',
+            parentId: 1,
+          },
+          {
+            id: 4,
+            name: 'd',
+            surname: 'Baran',
+            birthYear: 1987,
+            birthCity: 34,
+            sex: 'Female',
+            type: 'child',
+            parentId: 3,
+          },
+          {
+            id: 5,
+            name: 'e',
+            surname: 'Baran',
+            birthYear: 1987,
+            birthCity: 34,
+            sex: 'Female',
+            type: 'child',
+          },
+          {
+            id: 6,
+            name: 'f',
+            surname: 'Baran',
+            birthYear: 1987,
+            birthCity: 34,
+            sex: 'Female',
+            type: 'child',
+            parentId: 5,
+          },
+        ]}
+        columns={[
+          { title: 'Adı', field: 'name' },
+          { title: 'Soyadı', field: 'surname' },
+          { title: 'Cinsiyet', field: 'sex' },
+          { title: 'Tipi', field: 'type', removable: false },
+          { title: 'Doğum Yılı', field: 'birthYear', type: 'numeric' },
+          {
+            title: 'Doğum Yeri',
+            field: 'birthCity',
+            lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' },
+          },
+        ]}
+        parentChildData={(row, rows) => rows.find(a => a.id === row.parentId)}
+        options={{
+          selection: true,
+        }}
+      />
+    )
   }
-
-  this.setState(prevState => ({
-    food: {
-      ...prevState.food,           // copy all of the existing food object
-      pizza: {                     // specific we want to taret pizza object of food
-        ...prevState.food.pizza,   // copy all food.pizza key-value pairs
-        extraCheese: true          // update value of specific key
-      }
-    }
-  }))
-
-this.setState(prevState => ({
-  auctions: {
-    ...prevState.auctions,
-    auctions: { 
-      ...prevState.auctions.auction['id'],
-      auction
-    }
-  }
-}))
-
-var auctions = {
-  1 : {id: 1, itemName: "car"},
-  2 : {id: 2, itemName: "boat"}
-  }
-
+}

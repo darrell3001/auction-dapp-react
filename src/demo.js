@@ -32,7 +32,7 @@ const useStyles = makeStyles({
   }
 });
 
-export default props => {
+export default function Demo(props) {
   const classes = useStyles();
 
   return (
@@ -41,10 +41,13 @@ export default props => {
         <TableHead>
           <TableRow>
             <StyledTableCell align="right">id</StyledTableCell>
+            <StyledTableCell align="right">Owner</StyledTableCell>
             <StyledTableCell align="right">Item</StyledTableCell>
             <StyledTableCell align="right">End Time</StyledTableCell>
             <StyledTableCell align="right">Max Bid</StyledTableCell>
+            <StyledTableCell align="right">Max Bidder</StyledTableCell>
             <StyledTableCell align="right">Winning Bid</StyledTableCell>
+            <StyledTableCell align="right">Winning Bider</StyledTableCell>
             <StyledTableCell align="right">Current State</StyledTableCell>
           </TableRow>
         </TableHead>
@@ -56,6 +59,9 @@ export default props => {
                   {props.auctions[key].id}
                 </StyledTableCell>
                 <StyledTableCell align="right">
+                  {props.auctions[key].owner}
+                </StyledTableCell>
+                <StyledTableCell align="right">
                   {props.auctions[key].itemName}
                 </StyledTableCell>
                 <StyledTableCell align="right">
@@ -65,7 +71,13 @@ export default props => {
                   {props.auctions[key].maxBid}
                 </StyledTableCell>
                 <StyledTableCell align="right">
+                  {props.auctions[key].maxBidder}
+                </StyledTableCell>
+                <StyledTableCell align="right">
                   {props.auctions[key].winningBid}
+                </StyledTableCell>
+                <StyledTableCell align="right">
+                  {props.auctions[key].winningBidder}
                 </StyledTableCell>
                 <StyledTableCell align="right">
                   {props.auctions[key].currentState}
@@ -77,4 +89,4 @@ export default props => {
       </Table>
     </TableContainer>
   );
-};
+}
