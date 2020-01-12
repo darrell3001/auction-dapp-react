@@ -11,12 +11,14 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
 
+import InputGroup from "react-bootstrap/InputGroup";
+import FormControl from "react-bootstrap/FormControl";
+
 import { FaTrash } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
 
 import Demo from "./demo";
-// import Demo2 from "./demo2";
-// import Demo3 from "./demo3";
+import Demo4 from "./demo4";
 //#endregion
 
 //#region App - default class
@@ -26,35 +28,33 @@ export default class App extends Component {
     super(props);
     this.state = {
       fromAddress: 0,
-      contract: 0,
-      auctionCount: "",
+      checked: [],
+      bidAmount: 0,
 
       auctions: {},
 
       currentStatus: "",
-      lastTransactionStatus: "",
-
+      lastTransactionStatus: ""
     };
+
+    this.contract = 0;
 
     this.getWalletInfo = this.getWalletInfo.bind(this);
     this.getContractInfo = this.getContractInfo.bind(this);
-    this.subscribeToEvents = this.subscribeToEvents.bind(this);
+    this.subscribeToAllEvents = this.subscribeToAllEvents.bind(this);
     this.getAuctionCount = this.getAuctionCount.bind(this);
-    this.getAuction = this.getAuction.bind(this);
     this.getDashboardData = this.getDashboardData.bind(this);
+
+    this.handler = this.handler.bind(this);
+    this.guid = this.guid.bind(this);
+    this.onChangeBidAmount = this.onChangeBidAmount.bind(this);
+    this.onClickBidButton = this.onClickBidButton.bind(this);
+    this.onClickPaymentButton = this.onClickPaymentButton.bind(this);
+    this.onClickReceivedButton = this.onClickReceivedButton.bind(this);
+    this.onClickShippedButton = this.onClickShippedButton.bind(this);
+    this.onClickEndButton = this.onClickEndButton.bind(this);
   }
   //#endregion constructor
-
-  //#region getAuction()
-  getAuction(auctionId) {
-    return this.contract.methods
-      .auctions(auctionId)
-      .call()
-      .catch(error => {
-        console.log("getAuction() - error - ", error.message);
-      });
-  }
-  //#endregion getAuction()
 
   //#region getAuctionCount()
   getAuctionCount() {
@@ -102,7 +102,7 @@ export default class App extends Component {
     await window.ethereum
       .enable()
       .then(accounts => {
-        console.log("Approval granted");
+        console.log("Wallet access approval granted");
         console.log("fromAddress = ", accounts[0]);
         this.setState({ fromAddress: accounts[0] });
 
@@ -139,13 +139,12 @@ export default class App extends Component {
   }
   //#endregion getContactInfo()
 
+  //#region subscribeToAllEvents()
   subscribeToAllEvents() {
     this.contract.events
       .allEvents()
       .on("data", event => {
-        console.log(
-          new Date() + " - " + event.event + " - id : " + event.returnValues.id
-        );
+        console.log(event.event + " - id : " + event.returnValues.id);
 
         this.contract.methods
           .auctions(event.returnValues.id)
@@ -163,280 +162,7 @@ export default class App extends Component {
         console.log("Error occured on subscribe  - ", error);
       });
   }
-
-  //#region subscribeToEvens()
-  subscribeToEvents() {
-    //#region .NewAuctionCreated()
-    this.contract.events
-      .NewAuctionCreated()
-      .on("data", event => {
-        console.log("hello888 = ", event);
-        if (
-          this.state.lastGuid["NewAuctionCreated"] != event.returnValues.guid
-        ) {
-          this.setState(prevState => ({
-            lastGuid: {
-              ...prevState.lastGuid,
-              NewAuctionCreated: event.returnValues.guid
-            }
-          }));
-
-          console.log(
-            new Date() +
-              " - " +
-              "NewAuctionCreated.onEvent - New Auction was created. id : " +
-              event.returnValues.id +
-              ", itemName : " +
-              event.returnValues.itemName
-          );
-
-          this.contract.methods
-            .auctions(event.returnValues.id)
-            .call()
-            .then(auction => {
-              this.setState(prevState => ({
-                auctions: {
-                  ...prevState.auctions,
-                  [auction["id"]]: auction
-                }
-              }));
-            });
-        }
-      })
-      .on("error", error => {
-        console.log("NewAuctionCreated.onEvent(error) - ", error);
-      });
-    //#endregion .NewAuctionCreated()
-
-    //#region .BidAccepted()
-    this.contract.events
-      .BidAccepted()
-      .on("data", event => {
-        if (this.state.lastGuid["BidAccepted"] != event.returnValues.guid) {
-          this.setState(prevState => ({
-            lastGuid: {
-              ...prevState.lastGuid,
-              BidAccepted: event.returnValues.guid
-            }
-          }));
-          console.log(
-            new Date() +
-              " - " +
-              "BidAccepted.onEvent - New bid accepted. id : " +
-              event.returnValues.id +
-              ", maxBidder : " +
-              event.returnValues.maxBidder +
-              ", maxBid : " +
-              event.returnValues.maxBid
-          );
-
-          // const newAuctions = this.state.auctions.slice()
-          // newIds[event.returnValues.id] = 'B' //execute the manipulations
-          // this.setState({ids: newIds}) //set the new state
-
-          this.contract.methods
-            .auctions(event.returnValues.id)
-            .call()
-            .then(auction => {
-              this.setState(prevState => ({
-                auctions: {
-                  ...prevState.auctions,
-                  [auction["id"]]: auction
-                }
-              }));
-            });
-        }
-      })
-      .on("error", error => {
-        console.log("BidAccepted.onEvent(error) - ", error);
-      });
-    //#endregion .BidAccepted()
-
-    //#region .AuctionEnded()
-    this.contract.events
-      .AuctionEnded()
-      .on("data", event => {
-        if (this.state.lastGuid["AuctionEnded"] != event.returnValues.guid) {
-          this.setState(prevState => ({
-            lastGuid: {
-              ...prevState.lastGuid,
-              AuctionEnded: event.returnValues.guid
-            }
-          }));
-          console.log(
-            new Date() +
-              " - " +
-              "AuctionEnded.onEvent - Auction has ended. id : " +
-              event.returnValues.id +
-              ", winner : " +
-              event.returnValues.winner +
-              ", winningBid : " +
-              event.returnValues.winningBid
-          );
-
-          this.contract.methods
-            .auctions(event.returnValues.id)
-            .call()
-            .then(auction => {
-              this.setState(prevState => ({
-                auctions: {
-                  ...prevState.auctions,
-                  [auction["id"]]: auction
-                }
-              }));
-            });
-        }
-      })
-      .on("error", error => {
-        console.log("AuctionEnded.onEvent(error) - ", error);
-      });
-    // #endregion
-
-    // #region .AuctionDeleted()
-    this.contract.events
-      .AuctionDeleted()
-      .on("data", event => {
-        if (this.state.lastGuid["AuctionDeleted"] != event.returnValues.guid) {
-          this.setState(prevState => ({
-            lastGuid: {
-              ...prevState.lastGuid,
-              AuctionDeleted: event.returnValues.guid
-            }
-          }));
-          console.log(
-            new Date() +
-              " - " +
-              "AuctionDeleted.onEvent - Auction has been deleted. id : " +
-              event.returnValues.id
-          );
-
-          this.contract.methods
-            .auctions(event.returnValues.id)
-            .call()
-            .then(auction => {
-              this.setState(prevState => ({
-                auctions: {
-                  ...prevState.auctions,
-                  [auction["id"]]: auction
-                }
-              }));
-            });
-        }
-      })
-      .on("error", error => {
-        console.log("AuctionEnded.onEvent(error) - ", error);
-      });
-    // #endregion
-
-    // #region .WinnerSentPayment()
-    this.contract.events
-      .WinnerSentPayment()
-      .on("data", event => {
-        if (
-          this.state.lastGuid["WinnerSentPayment"] != event.returnValues.guid
-        ) {
-          this.setState(prevState => ({
-            lastGuid: {
-              ...prevState.lastGuid,
-              WinnerSentPayment: event.returnValues.guid
-            }
-          }));
-          console.log(
-            "WinnerSentPayment.onEvent - Winner has sent payment. id : " +
-              event.returnValues.id
-          );
-
-          this.contract.methods
-            .auctions(event.returnValues.id)
-            .call()
-            .then(auction => {
-              this.setState(prevState => ({
-                auctions: {
-                  ...prevState.auctions,
-                  [auction["id"]]: auction
-                }
-              }));
-            });
-        }
-      })
-      .on("error", error => {
-        console.log("WinnerSentPayment.onEvent(error) - ", error);
-      });
-    // #endregion
-
-    // #region .OwnerShippedItem()
-    this.contract.events
-      .OwnerShippedItem()
-      .on("data", event => {
-        if (
-          this.state.lastGuid["OwnerShippedItem"] != event.returnValues.guid
-        ) {
-          this.setState(prevState => ({
-            lastGuid: {
-              ...prevState.lastGuid,
-              OwnerShippedItem: event.returnValues.guid
-            }
-          }));
-          console.log(
-            "OwnerShippedItem.onEvent - Owner shipped item. id : " +
-              event.returnValues.id
-          );
-
-          this.contract.methods
-            .auctions(event.returnValues.id)
-            .call()
-            .then(auction => {
-              this.setState(prevState => ({
-                auctions: {
-                  ...prevState.auctions,
-                  [auction["id"]]: auction
-                }
-              }));
-            });
-        }
-      })
-      .on("error", error => {
-        console.log("OwnerShippedItem.onEvent(error) - ", error);
-      });
-    // #endregion
-
-    // #region .WinnerReceivedItem()
-    this.contract.events
-      .WinnerReceivedItem()
-      .on("data", event => {
-        if (
-          this.state.lastGuid["WinnerReceivedItem"] != event.returnValues.guid
-        ) {
-          this.setState(prevState => ({
-            lastGuid: {
-              ...prevState.lastGuid,
-              WinnerReceivedItem: event.returnValues.guid
-            }
-          }));
-          console.log(
-            "WinnerReceivedItem.onEvent - Winner received item. id : " +
-              event.returnValues.id
-          );
-
-          this.contract.methods
-            .auctions(event.returnValues.id)
-            .call()
-            .then(auction => {
-              this.setState(prevState => ({
-                auctions: {
-                  ...prevState.auctions,
-                  [auction["id"]]: auction
-                }
-              }));
-            });
-        }
-      })
-      .on("error", error => {
-        console.log("WinnerReceivedItem.onEvent(error) - ", error);
-      });
-    // #endregion
-  }
-  //#endregion
+  //#endregion subscribeToAllEvents()
 
   //#region componentDidMount()
   componentDidMount() {
@@ -451,24 +177,213 @@ export default class App extends Component {
     this.subscribeToAllEvents();
 
     this.getDashboardData();
-
-    //#endregion
   }
   //#endregion
+
+  methodSend(methodName, auctionId, guid, payload) {
+    this.contract.methods[methodName](auctionId, guid)
+      .send(payload)
+      .then(receipt => {
+        console.log("transaction submitted");
+      })
+      .catch(err => {
+        console.log("error - ", err.message);
+      });
+  }
+
+  onChangeBidAmount(e) {
+    console.log("onChangeBidAmount()");
+
+    this.setState({
+      bidAmount: e.target.value
+    });
+  }
+
+  onClickBidButton(e) {
+    console.log("onClickBidButton()");
+
+    const methodName = "bid";
+    const guid = this.guid();
+    const auctionId = this.state.checked["0"];
+    const payload = {
+      from: this.state.fromAddress,
+      value: window.web3.utils.toWei(this.state.bidAmount.toString(), "wei")
+    };
+
+    this.methodSend(methodName, auctionId, guid, payload);
+  }
+
+  onClickPaymentButton(e) {
+    console.log("onClickPaymentButton()");
+
+    const methodName = "sendPayment";
+    const guid = this.guid();
+    const auctionId = this.state.checked["0"];
+    const payload = {
+      from: this.state.fromAddress
+    };
+
+    this.methodSend(methodName, auctionId, guid, payload);
+  }
+
+  onClickReceivedButton(e) {
+    console.log("onClickReceivedButton()");
+
+    const methodName = "confirmDelivery";
+    const guid = this.guid();
+    const auctionId = this.state.checked["0"];
+    const payload = {
+      from: this.state.fromAddress
+    };
+
+    this.methodSend(methodName, auctionId, guid, payload);
+  }
+
+  onClickShippedButton(e) {
+    console.log("onClickShippedButton()");
+
+    const methodName = "confirmShipment";
+    const guid = this.guid();
+    const auctionId = this.state.checked["0"];
+    const payload = {
+      from: this.state.fromAddress
+    };
+
+    this.methodSend(methodName, auctionId, guid, payload);
+  }
+
+  onClickEndButton(e) {
+    console.log("onClickEndButton()");
+
+    const methodName = "endAuction";
+    const guid = this.guid();
+    const auctionId = this.state.checked["0"];
+    const payload = {
+      from: this.state.fromAddress
+    };
+
+    this.methodSend(methodName, auctionId, guid, payload);
+  }
+
+  handler(value) {
+    console.log("handler() - ", value);
+
+    var currentIndex = this.state.checked.indexOf(value);
+    var newChecked = [...this.state.checked];
+
+    console.log("handler() - 123 = ", currentIndex);
+
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+
+    this.setState({ checked: newChecked });
+  }
+
+  guid() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+      var r = (Math.random() * 16) | 0,
+        v = c == "x" ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  }
+
+  // <Demo4 auctions={this.state.auctions} />
 
   //#region main render()
   render() {
     console.log("hello - from render");
     return (
-      <div className="container">
-        // <Demo auctions={this.state.auctions} />
-      </div>
+      <Card>
+        <Card.Header className="text-center form-h1">Auction DApp</Card.Header>
+
+        <Card.Body className="text-left bg-light-blue">
+          <Card.Text>
+            <b>Welcome to the Very Simple Decentralized Auction App!</b>
+            <br /> Developed by KryptCraft
+          </Card.Text>
+        </Card.Body>
+        {/* <Demo auctions={this.state.auctions} /> */}
+        <Demo
+          auctions={this.state.auctions}
+          handler={this.handler}
+          checked={this.state.checked}
+        />
+
+        <div id="BidderDiv">
+          <Form>
+            <Form.Group as={Row} controlId="formHorizontalBid">
+              <Form.Label column sm={2}>
+                Bid:
+              </Form.Label>
+              <Col sm={4}>
+                <Form.Control
+                  type="numeric"
+                  disabled={this.state.checked.length > 1 ? true : false}
+                  onChange={e => this.onChangeBidAmount(e)}
+                />
+              </Col>
+            </Form.Group>
+          </Form>
+
+          <Button
+            disabled={this.state.checked.length > 1 ? true : false}
+            type="button"
+            variant="outline-primary"
+            className="btn mr-2"
+            onClick={e => this.onClickBidButton(e)}
+          >
+            Bid
+          </Button>
+        </div>
+
+        <div id="WinnerDiv">
+          <Button
+            disabled={this.state.checked.length > 1 ? true : false}
+            type="button"
+            variant="outline-primary"
+            className="btn float-left mr-2"
+            onClick={e => this.onClickPaymentButton(e)}
+          >
+            Payment
+          </Button>
+          <Button
+            disabled={this.state.checked.length > 1 ? true : false}
+            type="button"
+            variant="outline-primary"
+            className="btn float-left mr-2"
+            onClick={e => this.onClickReceivedButton(e)}
+          >
+            Received
+          </Button>
+        </div>
+        <div id="OwnerDiv">
+          <Button
+            disabled={this.state.checked.length > 1 ? true : false}
+            type="button"
+            variant="outline-primary"
+            className="btn float-left mr-2"
+            onClick={e => this.onClickShippedButton(e)}
+          >
+            Shipped
+          </Button>
+          <Button
+            disabled={this.state.checked.length > 1 ? true : false}
+            type="button"
+            variant="outline-primary"
+            className="btn float-left mr-2"
+            onClick={e => this.onClickEndButton(e)}
+          >
+            End
+          </Button>
+        </div>
+      </Card>
     );
   }
 }
+
 //#endregion main render()
 
 //#endregion
-
-// <Demo2 contract={this.state.contract} />
-// data={Object.keys(this.state.auctions).map(function(key) {

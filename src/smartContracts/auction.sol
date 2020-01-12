@@ -3,7 +3,7 @@ pragma solidity ^0.5.0;
 contract AuctionDapp {
 
   // Valid states for the auction
-  enum AuctionState {INPROGRESS, AWAITING_PAYMENT, AWAITING_SHIPMENT, AWAITING_DELIVERY, COMPLETE, DELETED}
+  enum AuctionState {INPROGRESS, AWAITING_PAYMENT, AWAITING_SHIPMENT, AWAITING_DELIVERY, COMPLETE}
 
   struct Auction {
     uint            id;
@@ -17,34 +17,34 @@ contract AuctionDapp {
 
     AuctionState currentState;
   }
-  
+
   Auction[] public auctions; 
-  uint auctionCount;
   uint maxAuctionDurationInMinutes = 60;
    
   constructor() public {
-    auctionCount = 0;
   }
 
   // Events that we will emit (can be subscribed)
   event NewAuctionCreated(uint id, string itemName, uint currentState, string guid);
   event BidAccepted(uint id, address maxBidder, uint maxBid, uint currentState, string guid);
   event AuctionEnded(uint id, address winner, uint winningBid, uint currentState, string guid);
-  event AuctionDeleted(uint id, uint currentState, string guid);
+  event AuctionDeleted(uint id, string guid);
   event WinnerSentPayment(uint id, uint currentState, string guid);
   event OwnerShippedItem(uint id, uint currentState, string guid);
   event WinnerReceivedItem(uint id, uint currentState, string guid);
 
+
   // getAuctionCount()
   // view only function (read only)
   function getAuctionCount() public view returns (uint) {
-      return auctionCount;
+      return auctions.length;
   }
+
 
   // createNewAuction()
   // expects an itemName and duration (in Minutes)
   function createNewAuction (string memory _itemName, uint _durationInMinutes, string memory _guid) public payable isValidAuctionDuration(_durationInMinutes) {
-    uint id = auctionCount;
+    uint id = (auctions.length - 1);  // index is zero based
     Auction memory newAuction = Auction({ id : id,
                                           owner : msg.sender, 
                                           itemName : _itemName, 
@@ -56,8 +56,6 @@ contract AuctionDapp {
                                           currentState : AuctionState.INPROGRESS });
 
     auctions.push(newAuction);
-    auctionCount++;
-
     emit NewAuctionCreated (newAuction.id, _itemName, uint(auctions[id].currentState), _guid);
   }
 
@@ -97,8 +95,8 @@ contract AuctionDapp {
   // Auction be deleted only by onwner
   // only if auction is in state COMPLETE
    function deleteAuction(uint _id, string memory _guid) public ownerOnly(_id) inState(_id, AuctionState.COMPLETE) {
-    auctions[_id].currentState = AuctionState.DELETED;
-    emit AuctionDeleted(_id, uint(auctions[_id].currentState), _guid);
+    delete auctions[_id];
+    emit AuctionDeleted(_id, _guid);
   }
 
   // sendPayment()

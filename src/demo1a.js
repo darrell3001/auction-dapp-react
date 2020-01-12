@@ -45,23 +45,29 @@ const useStyles = makeStyles({
   }
 });
 
-const auctionStateMappings = {
-  0: { state: "In Progress" },
-  1: { state: "Ended - Awaiting Payment" },
-  2: { state: "Ended - Awaiting Shipping" },
-  3: { state: "Ended - Awaiting Delivery" },
-  4: { state: "Complete" },
-  5: { state: "Deleted" }
-};
-
 export default function Demo(props) {
   const classes = useStyles();
 
-  // const [checked, setChecked] = React.useState([0]);
+  const [checked, setChecked] = React.useState([0]);
 
   const handleToggle = value => () => {
-    props.handler(value);
+    const currentIndex = checked.indexOf(value);
+    const newChecked = [...checked];
+
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+
+    setChecked(newChecked);
   };
+
+  // const onClick = (e, datum) => {
+  //   if (onRowClick) {
+  //     onRowClick(evt, datum);
+  //   }
+  // };
 
   // <StyledTableCell align="right">id</StyledTableCell>
   // <StyledTableRow key={props.auctions[key].id}>
@@ -73,29 +79,23 @@ export default function Demo(props) {
         <TableHead>
           <TableRow>
             <TableCell align="right"></TableCell>
+            <TableCell align="right">id</TableCell>
             <TableCell align="right">Item</TableCell>
             <TableCell align="right">End Time</TableCell>
-            <TableCell align="right">Current State</TableCell>
             <TableCell align="right">Max Bid</TableCell>
+            <TableCell align="right">Current State</TableCell>
             <TableCell align="right">Winning Bid</TableCell>
-            <TableCell align="left">Max Bidder</TableCell>
-            <TableCell align="left">Winning Bider</TableCell>
-            <TableCell align="left">Owner</TableCell>
+            <TableCell align="right">Owner</TableCell>
+            <TableCell align="right">Max Bidder</TableCell>
+            <TableCell align="right">Winning Bider</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {Object.keys(props.auctions).map(function(key) {
             const labelId = `checkbox-list-label-${props.auctions[key].id}`;
-            const localeEndTime = new Date(
-              props.auctions[key].endTime * 1000
-            ).toLocaleString();
-            const auctionState =
-              auctionStateMappings[[props.auctions[key].currentState]].state;
-
             return (
               <TableRow
                 key={props.auctions[key].id}
-                // onClick={props.handler(props.auctions[key].id)}
                 onClick={handleToggle(props.auctions[key].id)}
               >
                 <TableCell padding="checkbox">
@@ -104,32 +104,35 @@ export default function Demo(props) {
                     // onClick={e => onClick(e, datum)}
                     key={props.auctions[key].id}
                     edge="start"
-                    checked={
-                      props.checked.indexOf(props.auctions[key].id) !== -1
-                    }
+                    checked={checked.indexOf(props.auctions[key].id) !== -1}
                     tabIndex={-1}
                     disableRipple
                     inputProps={{ "aria-labelledby": labelId }}
                   />
                 </TableCell>
+                <TableCell align="right">{props.auctions[key].id}</TableCell>
                 <TableCell align="right">
                   {props.auctions[key].itemName}
                 </TableCell>
-                <TableCell align="right">{localeEndTime}</TableCell>
-                <TableCell align="right">{auctionState}</TableCell>
+                <TableCell align="right">
+                  {props.auctions[key].endTime}
+                </TableCell>
                 <TableCell align="right">
                   {props.auctions[key].maxBid}
                 </TableCell>
                 <TableCell align="right">
                   {props.auctions[key].winningBid}
                 </TableCell>
-                <TableCell align="left">
-                  {props.auctions[key].maxBidder}
+                <TableCell align="right">
+                  {props.auctions[key].currentState}
                 </TableCell>
-                <TableCell align="left">
+                <TableCell align="right">
                   {props.auctions[key].winningBidder}
                 </TableCell>
-                <TableCell align="left">{props.auctions[key].owner}</TableCell>
+                <TableCell align="right">{props.auctions[key].owner}</TableCell>
+                <TableCell align="right">
+                  {props.auctions[key].maxBidder}
+                </TableCell>
               </TableRow>
             );
           })}

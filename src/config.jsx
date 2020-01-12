@@ -1,5 +1,5 @@
 export const SMART_CONTRACT_ADDRESS =
-  "0x713c98434d7beDa837B36A7158230667856747F7";
+  "0x15EeABb5980fd77FF971415520F6245C68611287";
 
 export const SMART_CONTRACT_ABI = [
   {
@@ -15,12 +15,6 @@ export const SMART_CONTRACT_ABI = [
         indexed: false,
         internalType: "uint256",
         name: "id",
-        type: "uint256"
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "currentState",
         type: "uint256"
       },
       {
