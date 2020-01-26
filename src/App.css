@@ -28,6 +28,18 @@
   color: #61dafb;
 }
 
+.rowAuctionOwner {
+  background-color: red;
+}
+
+.rowAuctionWinningBidder {
+  background-color: green;
+}
+
+.rowAuctionMaxBidder {
+  background-color: blue;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

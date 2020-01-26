@@ -3,7 +3,7 @@ pragma solidity ^0.5.0;
 contract AuctionDapp {
 
   // Valid states for the auction
-  enum AuctionState {INPROGRESS, AWAITING_PAYMENT, AWAITING_SHIPMENT, AWAITING_DELIVERY, COMPLETE}
+  enum AuctionState {INPROGRESS, AWAITING_PAYMENT, AWAITING_SHIPMENT, AWAITING_DELIVERY, COMPLETE, DELETED}
 
   struct Auction {
     uint            id;
@@ -95,7 +95,7 @@ contract AuctionDapp {
   // Auction be deleted only by onwner
   // only if auction is in state COMPLETE
    function deleteAuction(uint _id, string memory _guid) public ownerOnly(_id) inState(_id, AuctionState.COMPLETE) {
-    delete auctions[_id];
+    auctions[_id].currentState = AuctionState.DELETED;
     emit AuctionDeleted(_id, _guid);
   }
 
