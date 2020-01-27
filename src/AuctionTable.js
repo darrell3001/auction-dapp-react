@@ -10,16 +10,6 @@ import Paper from "@material-ui/core/Paper";
 
 import Checkbox from "@material-ui/core/Checkbox";
 
-import Container from "react-bootstrap/Container";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import ListGroup from "react-bootstrap/ListGroup";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
-import Card from "react-bootstrap/Card";
-
-import { FaTrash } from "react-icons/fa";
-import { FaEdit } from "react-icons/fa";
 
 import "./App.css";
 
@@ -60,15 +50,9 @@ const useStyles = makeStyles({
 export default function AuctionTable(props) {
   const classes = useStyles();
 
-  // const [checked, setChecked] = React.useState([0]);
-
   const eventHandlerWrapper = value => () => {
     props.handler(value);
   };
-
-  // <StyledTableCell align="right">id</StyledTableCell>
-  // <StyledTableRow key={props.auctions[key].id}>
-  //               <StyledTableCell align="right">
 
   function isAuctionOwner(value) {
     if (

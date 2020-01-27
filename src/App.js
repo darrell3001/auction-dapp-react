@@ -5,10 +5,8 @@ import { SMART_CONTRACT_ABI, SMART_CONTRACT_ADDRESS } from "./config";
 
 import "./App.css";
 
-import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import ListGroup from "react-bootstrap/ListGroup";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
@@ -41,8 +39,7 @@ export default class App extends Component {
 
       auctions: {},
 
-      currentStatus: "",
-      lastTransactionStatus: ""
+      currentStatus: ""
     };
 
     this.contract = 0;
@@ -67,6 +64,8 @@ export default class App extends Component {
       this
     );
     this.canAuctionBeEnded = this.canAuctionBeEnded.bind(this);
+
+    this.timerPop = this.timerPop.bind(this);
   }
   //#endregion constructor
 
@@ -158,7 +157,16 @@ export default class App extends Component {
   //#region subscribeToAllEvents()
   subscribeToAllEvents() {
     this.contract.events
-      .allEvents()
+      .allEvents((error, event) => {
+        if (error) {
+          this.setState({ currentStatus: "failed to subscribe" });
+
+          setInterval(() => {
+            this.timerPop();
+          }, 5000);
+        }
+      })
+
       .on("data", event => {
         console.log(event.event + " - id : " + event.returnValues.id);
 
@@ -199,9 +207,17 @@ export default class App extends Component {
   }
   //#endregion subscribeToAllEvents()
 
+  //#region timerPop()
+  timerPop() {
+    const msg = "timer pop - " + Date().toLocaleString();
+    this.setState({ currentStatus: msg, auctions: {} });
+    this.getDashboardData();
+  }
+  //#endregion subscribeToAllEvents()
+
   //#region componentDidMount()
   componentDidMount() {
-    console.log("hello componentDidMount()");
+    console.log("hello - componentDidMount()");
 
     // if getWalletInfo() returns 0, then we cannot proceed so just return
     if (!this.getWalletInfo()) return;
@@ -441,18 +457,12 @@ export default class App extends Component {
   canAuctionBeEnded(auction) {
     const auctionEndTime = new Date(auction.endTime * 1000);
 
-    console.log("hello000 ", auction);
-
     if (auction.currentState == 0) {
-      console.log("hello1a1a1a");
-
       if (auction.maxBidder == 0) {
-        console.log("hi222");
         return true;
       }
 
       if (auctionEndTime < new Date()) {
-        console.log("hi111");
         return true;
       }
     }
@@ -472,7 +482,7 @@ export default class App extends Component {
 
   //#region main render()
   render() {
-    console.log("hello - from render");
+    console.log("hello - render");
 
     const multiSelected = this.state.checked.length > 1 ? true : false;
     const onlyOneSelected = this.state.checked.length == 1 ? true : false;
