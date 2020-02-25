@@ -48,6 +48,7 @@ const useStyles = makeStyles({
 });
 
 export default function AuctionTable(props) {
+  const { blur } = props;
   const classes = useStyles();
 
   const eventHandlerWrapper = value => () => {
@@ -88,8 +89,12 @@ export default function AuctionTable(props) {
     }
   }
 
+  const style = {
+    filter: 'blur(2px)'
+  }
+
   return (
-    <TableContainer component={Paper}>
+    <TableContainer style={blur ? style: null} className='auction-table' component={Paper}>
       <Table className={classes.table} aria-label="customized table">
         <TableHead>
           <StyledTableRow>

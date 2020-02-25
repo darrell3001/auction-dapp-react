@@ -12,6 +12,8 @@ import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
 
 import AuctionTable from "./AuctionTable";
+import Header from './components/Header';
+import NewAuction from './components/NewAuction';
 
 // import "./auctionStateMappings";
 const auctionStateMappings = {
@@ -34,6 +36,7 @@ export default class App extends Component {
 
       newAuctionItemName: "",
       newAuctionDurationInMinutes: "",
+      displayNewAuction: false,
 
       bidAmount: 0,
 
@@ -49,6 +52,11 @@ export default class App extends Component {
     this.subscribeToAllEvents = this.subscribeToAllEvents.bind(this);
     this.getAuctionCount = this.getAuctionCount.bind(this);
     this.getDashboardData = this.getDashboardData.bind(this);
+
+    this.onChangeNewAuctionItemName = this.onChangeNewAuctionItemName.bind(this);
+    this.onChangeNewAuctionDurationInMinutes = this.onChangeNewAuctionDurationInMinutes.bind(this);
+    this.onClickNewAuctionButton = this.onClickNewAuctionButton.bind(this);
+    this.toggleDisplayNewAuction = this.toggleDisplayNewAuction.bind(this);
 
     this.onClickCheckBox = this.onClickCheckBox.bind(this);
     this.guid = this.guid.bind(this);
@@ -246,7 +254,7 @@ export default class App extends Component {
 
   //#region onChangeNewAuctionItemName()
   onChangeNewAuctionItemName(e) {
-    console.log("onChangeNewAuctionItemName()");
+    console.log("onChangeNewAuctionItemName()", e.target.value);
 
     this.setState({
       newAuctionItemName: e.target.value
@@ -287,6 +295,10 @@ export default class App extends Component {
       .then(receipt => {
         console.log("transaction submitted");
       })
+      .then(() => this.setState({
+        newAuctionItemName: "",
+        newAuctionDurationInMinutes: ""
+      }))
       .catch(err => {
         console.log("error - ", err.message);
       });
@@ -480,6 +492,14 @@ export default class App extends Component {
   }
   //#endregion
 
+  toggleDisplayNewAuction() {
+    if(this.state.displayNewAuction === true) {
+      this.setState({displayNewAuction: false})
+    } else {
+      this.setState({displayNewAuction: true})
+    }
+  }
+
   //#region main render()
   render() {
     console.log("hello - render");
@@ -520,54 +540,27 @@ export default class App extends Component {
 
     return (
       <Card>
-        <Card.Header className="text-center form-h1">Auction DApp</Card.Header>
-
-        <Card.Body className="text-left bg-light-blue">
-          <Card.Text>
-            <b>Welcome to the Very Simple Decentralized Auction App!</b>
-            <br /> Developed by KryptoCraft
-          </Card.Text>
-        </Card.Body>
+        <Header 
+          toggleDisplayNewAuction={this.toggleDisplayNewAuction}
+          blur={this.state.displayNewAuction}
+        />
         <AuctionTable
           fromAddress={this.state.fromAddress}
           auctions={this.state.auctions}
           handler={this.onClickCheckBox}
           checked={this.state.checked}
+          blur={this.state.displayNewAuction}
         />
-
-        <div id="NewAuctionDiv">
-          <Form>
-            <Form.Group as={Row}>
-              <Form.Label column>New Auction Item:</Form.Label>
-              <Col>
-                <Form.Control
-                  disabled={!noneSelected}
-                  onChange={e => this.onChangeNewAuctionItemName(e)}
-                />
-              </Col>
-
-              <Form.Label column>Auction Duration (Minutes):</Form.Label>
-              <Col>
-                <Form.Control
-                  type="numeric"
-                  disabled={!noneSelected}
-                  onChange={e => this.onChangeNewAuctionDurationInMinutes(e)}
-                />
-              </Col>
-
-              <Button
-                disabled={!noneSelected}
-                type="button"
-                variant="outline-primary"
-                className="btn"
-                onClick={e => this.onClickNewAuctionButton(e)}
-              >
-                New Auction
-              </Button>
-            </Form.Group>
-          </Form>
-        </div>
-
+        <NewAuction 
+          noneSelected={noneSelected}
+          onChangeNewAuctionItemName={this.onChangeNewAuctionItemName}
+          onChangeNewAuctionDurationInMinutes={this.onChangeNewAuctionDurationInMinutes}
+          onClickNewAuctionButton={this.onClickNewAuctionButton}
+          newAuctionItemName={this.state.newAuctionItemName}
+          newAuctionDurationInMinutes={this.state.newAuctionDurationInMinutes}
+          displayNewAuction={this.state.displayNewAuction}
+          toggleDisplayNewAuction={this.toggleDisplayNewAuction}
+        />
         <div id="BidderDiv">
           <Form>
             <Form.Group as={Row}>

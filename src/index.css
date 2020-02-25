@@ -1,8 +1,7 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -10,4 +9,101 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.center {
+  text-align: center;
+}
+
+.inline {
+  display: inline;
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+.space-between {
+  justify-content: space-between;
+}
+
+.column {
+  flex-direction: column;
+}
+
+.shadow {
+  box-shadow: 0px 0px 8px 0px #000000;
+}
+
+.header {
+  /* max-width: 200px; */
+}
+
+.header div{
+  max-width: 279px;
+  margin: 0 auto;
+}
+
+.header h1 {
+  /* text-align: center; */
+  margin: 0px;
+}
+
+.new-auction {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+.new-auction section {
+  width: 80vw;
+  background: rgba(255, 255, 255, 0.856);
+  border: 3px solid rgb(206, 206, 206);
+  border-radius: 10px;
+}
+.new-auction section div {
+  border-bottom: 1px solid rgba(141, 141, 141, 0.87);
+  padding: 3%;
+}
+
+input {
+  width: 100%;
+  border-radius: 5px;
+  /* border-style: solid; */
+  padding: 0 0 0 5px;
+
+}
+
+button {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: blue;
+  margin: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+button:active {
+  transform: translateY(1px);
+}
+button:focus {
+  outline: none;
+}
+
+.button-inverted {
+  background: #3194C9;
+  background: linear-gradient(0deg, rgba(36,108,147,1) 0%, rgba(49,148,201,1) 66%);
+  color: white;
+  font-weight: 600;
+  border: black;
+  padding: 5px 10px;
+  outline: none;
+}
+.button-inverted:active {
+  transform: translateY(1px);
 }
