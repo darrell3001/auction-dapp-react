@@ -1,29 +1,22 @@
 //#region imports
-import React, { Component } from "react";
-import Web3 from "web3";
-import { SMART_CONTRACT_ABI, SMART_CONTRACT_ADDRESS } from "./config";
+import React, { Component } from 'react';
+import Web3 from 'web3';
+import { SMART_CONTRACT_ABI, SMART_CONTRACT_ADDRESS } from './config';
 
-import "./App.css";
+import './App.css';
 
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
-import Card from "react-bootstrap/Card";
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+import Card from 'react-bootstrap/Card';
 
-import AuctionTable from "./AuctionTable";
+import AuctionTable from './AuctionTable';
 import Header from './components/Header';
 import NewAuction from './components/NewAuction';
+import { auctionStateMappings } from './auctionStateMappings';
 
-// import "./auctionStateMappings";
-const auctionStateMappings = {
-  0: { state: "inProgress", description: "In Progress" },
-  1: { state: "awaitingPayment", description: "Ended - Awaiting Payment" },
-  2: { state: "awaitingShipment", description: "Ended - Awaiting Shipping" },
-  3: { state: "awaitingDelivery", description: "Ended - Awaiting Delivery" },
-  4: { state: "complete", description: "Complete" },
-  5: { state: "deleted", description: "Deleted" }
-}; //#endregion
+//#endregion
 
 //#region App - default class
 export default class App extends Component {
@@ -33,16 +26,12 @@ export default class App extends Component {
     this.state = {
       fromAddress: 0,
       checked: [],
-
-      newAuctionItemName: "",
-      newAuctionDurationInMinutes: "",
+      newAuctionItemName: '',
+      newAuctionDurationInMinutes: '',
       displayNewAuction: false,
-
       bidAmount: 0,
-
       auctions: {},
-
-      currentStatus: ""
+      currentStatus: ''
     };
 
     this.contract = 0;
@@ -83,7 +72,7 @@ export default class App extends Component {
       .getAuctionCount()
       .call()
       .catch(error => {
-        console.log("getAuctionCount() - error - ", error.message);
+        console.log('getAuctionCount() - error - ', error.message);
       });
   }
   //#endregion getAuctionCount()
@@ -96,11 +85,11 @@ export default class App extends Component {
           .auctions(auctionId)
           .call()
           .then(auction => {
-            if (auctionStateMappings[auction.currentState].state != "deleted") {
+            if (auctionStateMappings[auction.currentState].state != 'deleted') {
               this.setState(prevState => ({
                 auctions: {
                   ...prevState.auctions,
-                  [auction["id"]]: auction
+                  [auction['id']]: auction
                 }
               }));
             }
@@ -117,7 +106,7 @@ export default class App extends Component {
       window.web3 = new Web3(window.ethereum);
     } else {
       console.log(
-        "Please install MetaMask. How To instructions can be found here: https://www.youtube.com/watch?v=wTlI2_zxXpU"
+        'Please install MetaMask. How To instructions can be found here: https://www.youtube.com/watch?v=wTlI2_zxXpU'
       );
       return 0;
     }
@@ -125,21 +114,21 @@ export default class App extends Component {
     await window.ethereum
       .enable()
       .then(accounts => {
-        console.log("Wallet access approval granted");
-        console.log("fromAddress = ", accounts[0]);
+        console.log('Wallet access approval granted');
+        console.log('fromAddress = ', accounts[0]);
         this.setState({ fromAddress: accounts[0] });
 
         // this handler will fire when account is changed in MetaMask
-        window.ethereum.on("accountsChanged", accounts => {
+        window.ethereum.on('accountsChanged', accounts => {
           // Note: accounts[0] and window.ethereum.selectedAddress are the same
-          console.log("updated fromAddress = ", accounts[0]);
+          console.log('updated fromAddress = ', accounts[0]);
           this.setState({ fromAddress: accounts[0] });
         });
       })
       // User denied account access...
       .catch(error => {
         console.log(
-          "maybe user didn't give permission to use wallet??. Cannot proceed.",
+          'maybe user didn\'t give permission to use wallet??. Cannot proceed.',
           error
         );
         this.setState({ fromAccount: 0 });
@@ -167,7 +156,7 @@ export default class App extends Component {
     this.contract.events
       .allEvents((error, event) => {
         if (error) {
-          this.setState({ currentStatus: "failed to subscribe" });
+          this.setState({ currentStatus: 'failed to subscribe' });
 
           setInterval(() => {
             this.timerPop();
@@ -175,11 +164,11 @@ export default class App extends Component {
         }
       })
 
-      .on("data", event => {
-        console.log(event.event + " - id : " + event.returnValues.id);
+      .on('data', event => {
+        console.log(event.event + ' - id : ' + event.returnValues.id);
 
         switch (event.event) {
-          case "AuctionDeleted":
+          case 'AuctionDeleted':
             var newAuctions = { ...this.state.auctions };
             delete newAuctions[event.returnValues.id];
 
@@ -203,21 +192,21 @@ export default class App extends Component {
                 this.setState(prevState => ({
                   auctions: {
                     ...prevState.auctions,
-                    [auction["id"]]: auction
+                    [auction['id']]: auction
                   }
                 }));
               });
         }
       })
-      .on("error", error => {
-        console.log("Error occured on subscribe  - ", error);
+      .on('error', error => {
+        console.log('Error occured on subscribe  - ', error);
       });
   }
   //#endregion subscribeToAllEvents()
 
   //#region timerPop()
   timerPop() {
-    const msg = "timer pop - " + Date().toLocaleString();
+    const msg = 'timer pop - ' + Date().toLocaleString();
     this.setState({ currentStatus: msg, auctions: {} });
     this.getDashboardData();
   }
@@ -225,7 +214,7 @@ export default class App extends Component {
 
   //#region componentDidMount()
   componentDidMount() {
-    console.log("hello - componentDidMount()");
+    console.log('hello - componentDidMount()');
 
     // if getWalletInfo() returns 0, then we cannot proceed so just return
     if (!this.getWalletInfo()) return;
@@ -244,17 +233,17 @@ export default class App extends Component {
     this.contract.methods[methodName](auctionId, guid)
       .send(payload)
       .then(receipt => {
-        console.log("transaction submitted");
+        console.log('transaction submitted');
       })
       .catch(err => {
-        console.log("error - ", err.message);
+        console.log('error - ', err.message);
       });
   }
   //#endregion
 
   //#region onChangeNewAuctionItemName()
   onChangeNewAuctionItemName(e) {
-    console.log("onChangeNewAuctionItemName()", e.target.value);
+    console.log('onChangeNewAuctionItemName()', e.target.value);
 
     this.setState({
       newAuctionItemName: e.target.value
@@ -264,7 +253,7 @@ export default class App extends Component {
 
   //#region onChangeNewAuctionDurationInMinutes()
   onChangeNewAuctionDurationInMinutes(e) {
-    console.log("onChangeNewAuctionDurationInMinutes()");
+    console.log('onChangeNewAuctionDurationInMinutes()');
 
     this.setState({
       newAuctionDurationInMinutes: e.target.value
@@ -274,9 +263,9 @@ export default class App extends Component {
 
   //#region onClickNewAuctionButton()
   onClickNewAuctionButton(e) {
-    console.log("onClickNewAuctionButton()");
+    console.log('onClickNewAuctionButton()');
 
-    const methodName = "createNewAuction";
+    const methodName = 'createNewAuction';
     const guid = this.guid();
 
     const payload = {
@@ -293,21 +282,21 @@ export default class App extends Component {
     )
       .send(payload)
       .then(receipt => {
-        console.log("transaction submitted");
+        console.log('transaction submitted');
       })
       .then(() => this.setState({
-        newAuctionItemName: "",
-        newAuctionDurationInMinutes: ""
+        newAuctionItemName: '',
+        newAuctionDurationInMinutes: ''
       }))
       .catch(err => {
-        console.log("error - ", err.message);
+        console.log('error - ', err.message);
       });
   }
   //#endregion
 
   //#region onChangeBidAmount()
   onChangeBidAmount(e) {
-    console.log("onChangeBidAmount()");
+    console.log('onChangeBidAmount()');
 
     this.setState({
       bidAmount: e.target.value
@@ -317,14 +306,14 @@ export default class App extends Component {
 
   //#region onClickBidButton()
   onClickBidButton(e) {
-    console.log("onClickBidButton()");
+    console.log('onClickBidButton()');
 
-    const methodName = "bid";
+    const methodName = 'bid';
     const guid = this.guid();
-    const auctionId = this.state.checked["0"];
+    const auctionId = this.state.checked['0'];
     const payload = {
       from: this.state.fromAddress,
-      value: window.web3.utils.toWei(this.state.bidAmount.toString(), "wei")
+      value: window.web3.utils.toWei(this.state.bidAmount.toString(), 'wei')
     };
 
     this.methodSend(methodName, auctionId, guid, payload);
@@ -333,11 +322,11 @@ export default class App extends Component {
 
   //#region onClickPaymentButton()
   onClickPaymentButton(e) {
-    console.log("onClickPaymentButton()");
+    console.log('onClickPaymentButton()');
 
-    const methodName = "sendPayment";
+    const methodName = 'sendPayment';
     const guid = this.guid();
-    const auctionId = this.state.checked["0"];
+    const auctionId = this.state.checked['0'];
     const payload = {
       from: this.state.fromAddress
     };
@@ -348,11 +337,11 @@ export default class App extends Component {
 
   //#region onClickReceivedButton()
   onClickReceivedButton(e) {
-    console.log("onClickReceivedButton()");
+    console.log('onClickReceivedButton()');
 
-    const methodName = "confirmDelivery";
+    const methodName = 'confirmDelivery';
     const guid = this.guid();
-    const auctionId = this.state.checked["0"];
+    const auctionId = this.state.checked['0'];
     const payload = {
       from: this.state.fromAddress
     };
@@ -363,11 +352,11 @@ export default class App extends Component {
 
   //#region onClickShippedButton()
   onClickShippedButton(e) {
-    console.log("onClickShippedButton()");
+    console.log('onClickShippedButton()');
 
-    const methodName = "confirmShipment";
+    const methodName = 'confirmShipment';
     const guid = this.guid();
-    const auctionId = this.state.checked["0"];
+    const auctionId = this.state.checked['0'];
     const payload = {
       from: this.state.fromAddress
     };
@@ -378,11 +367,11 @@ export default class App extends Component {
 
   //#region onClickEndButton()
   onClickEndButton(e) {
-    console.log("onClickEndButton()");
+    console.log('onClickEndButton()');
 
-    const methodName = "endAuction";
+    const methodName = 'endAuction';
     const guid = this.guid();
-    const auctionId = this.state.checked["0"];
+    const auctionId = this.state.checked['0'];
     const payload = {
       from: this.state.fromAddress
     };
@@ -393,11 +382,11 @@ export default class App extends Component {
 
   //#region onClickDeleteButton()
   onClickDeleteButton(e) {
-    console.log("onClickDeleteButton()");
+    console.log('onClickDeleteButton()');
 
-    const methodName = "deleteAuction";
+    const methodName = 'deleteAuction';
     const guid = this.guid();
-    const auctionId = this.state.checked["0"];
+    const auctionId = this.state.checked['0'];
     const payload = {
       from: this.state.fromAddress
     };
@@ -484,9 +473,9 @@ export default class App extends Component {
 
   //#region guid()
   guid() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
       var r = (Math.random() * 16) | 0,
-        v = c == "x" ? r : (r & 0x3) | 0x8;
+        v = c == 'x' ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
   }
@@ -502,7 +491,7 @@ export default class App extends Component {
 
   //#region main render()
   render() {
-    console.log("hello - render");
+    console.log('hello - render');
 
     const multiSelected = this.state.checked.length > 1 ? true : false;
     const onlyOneSelected = this.state.checked.length == 1 ? true : false;
@@ -561,13 +550,13 @@ export default class App extends Component {
           displayNewAuction={this.state.displayNewAuction}
           toggleDisplayNewAuction={this.toggleDisplayNewAuction}
         />
-        <div id="BidderDiv">
+        <div id='BidderDiv'>
           <Form>
             <Form.Group as={Row}>
               <Form.Label column>Bid:</Form.Label>
               <Col>
                 <Form.Control
-                  type="numeric"
+                  type='numeric'
                   disabled={
                     !onlyOneSelected ||
                     auctionOwnerIsSelected ||
@@ -582,9 +571,9 @@ export default class App extends Component {
                   auctionOwnerIsSelected ||
                   !auctionStateInProgress
                 }
-                type="button"
-                variant="outline-primary"
-                className="btn"
+                type='button'
+                variant='outline-primary'
+                className='btn'
                 onClick={e => this.onClickBidButton(e)}
               >
                 Bid
@@ -593,14 +582,14 @@ export default class App extends Component {
           </Form>
         </div>
 
-        <div id="WinnerDiv">
+        <div id='WinnerDiv'>
           <Button
             disabled={
               !auctionWinningBidderIsSelected || !auctionStateAwaitingPayment
             }
-            type="button"
-            variant="outline-primary"
-            className="btn float-left mr-2"
+            type='button'
+            variant='outline-primary'
+            className='btn float-left mr-2'
             onClick={e => this.onClickPaymentButton(e)}
           >
             Payment
@@ -609,38 +598,38 @@ export default class App extends Component {
             disabled={
               !auctionWinningBidderIsSelected || !auctionStateAwaitingDelivery
             }
-            type="button"
-            variant="outline-primary"
-            className="btn float-left mr-2"
+            type='button'
+            variant='outline-primary'
+            className='btn float-left mr-2'
             onClick={e => this.onClickReceivedButton(e)}
           >
             Received
           </Button>
         </div>
-        <div id="OwnerDiv">
+        <div id='OwnerDiv'>
           <Button
             disabled={!auctionOwnerIsSelected || !auctionStateAwaitingShipment}
-            type="button"
-            variant="outline-primary"
-            className="btn float-left mr-2"
+            type='button'
+            variant='outline-primary'
+            className='btn float-left mr-2'
             onClick={e => this.onClickShippedButton(e)}
           >
             Shipped
           </Button>
           <Button
             disabled={!auctionOwnerIsSelected || !auctionCanBeEnded}
-            type="button"
-            variant="outline-primary"
-            className="btn float-left mr-2"
+            type='button'
+            variant='outline-primary'
+            className='btn float-left mr-2'
             onClick={e => this.onClickEndButton(e)}
           >
             End
           </Button>
           <Button
             disabled={!auctionOwnerIsSelected || !auctionStateComplete}
-            type="button"
-            variant="outline-primary"
-            className="btn float-left mr-2"
+            type='button'
+            variant='outline-primary'
+            className='btn float-left mr-2'
             onClick={e => this.onClickDeleteButton(e)}
           >
             Delete

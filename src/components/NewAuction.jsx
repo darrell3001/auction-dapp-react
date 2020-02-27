@@ -40,7 +40,7 @@ export default function NewAuction(props) {
             <button
             className='button-inverted'
               disabled={!noneSelected}
-              // onClick={e => onClickNewAuctionButton(e)}
+              onClick={e => onClickNewAuctionButton(e)}
             >
               Create Auction
             </button>

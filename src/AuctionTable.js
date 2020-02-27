@@ -1,56 +1,11 @@
-import React from "react";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
-
-import Checkbox from "@material-ui/core/Checkbox";
-
-
-import "./App.css";
+import React, { useState } from "react";
 import Auction from './components/Auction';
-
-// import "./auctionStateMappings";
-const auctionStateMappings = {
-  0: { state: "inProgress", description: "In Progress" },
-  1: { state: "awaitingPayment", description: "Ended - Awaiting Payment" },
-  2: { state: "awaitingShipment", description: "Ended - Awaiting Shipping" },
-  3: { state: "awaitingDelivery", description: "Ended - Awaiting Delivery" },
-  4: { state: "complete", description: "Complete" },
-  5: { state: "deleted", description: "Deleted" }
-};
-
-const StyledTableCell = withStyles(theme => ({
-  head: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white
-  },
-  body: {
-    fontSize: 14
-  }
-}))(TableCell);
-
-const StyledTableRow = withStyles(theme => ({
-  root: {
-    "&:nth-of-type(odd)": {
-      // backgroundColor: theme.palette.background.default
-    }
-  }
-}))(TableRow);
-
-const useStyles = makeStyles({
-  table: {
-    minWidth: 700
-  }
-});
+import { auctionStateMappings } from "./auctionStateMappings";
 
 export default function AuctionTable(props) {
   const { blur } = props;
-  const classes = useStyles();
+  const [toggleDisplayAuction, setToggleDisplayAuction] = useState(false);
+  const [auctionInfo, setAuctionInfo] = useState(null);
 
   const eventHandlerWrapper = value => () => {
     props.handler(value);
@@ -82,146 +37,84 @@ export default function AuctionTable(props) {
     if (
       props.auctions[value].winningBidder == 0 &&
       props.fromAddress.toUpperCase() ==
-        props.auctions[value].maxBidder.toUpperCase()
-    ) {
-      return true;
-    } else {
-      return false;
+      props.auctions[value].maxBidder.toUpperCase()
+      ) {
+        return true;
+      } else {
+        return false;
+      }
     }
-  }
-
-  const style = {
-    filter: 'blur(2px)'
+    
+    const style = {
+      filter: 'blur(2px)'
+    }
+  
+  function clickAuction(key, auctionObjectEvent) {
+    eventHandlerWrapper(key);
+    console.log({key});
+    console.log(eventHandlerWrapper(key));
+    setAuctionInfo(auctionObjectEvent)
+    setToggleDisplayAuction(toggleDisplayAuction ? false : true);
   }
 
   return (
     <>
-    <table>
-      <tr>
-        <th></th>
-        <th>Item</th>
-        <th>End</th>
-        <th>Current State</th>
-        <th>Max Bid</th>
-        <th>Winning Bid</th>
-      </tr>
-      {Object.keys(props.auctions).map(function(key) {
-        const labelId = `checkbox-list-label-${props.auctions[key].id}`;
-        const localeEndTime = new Date(
-          props.auctions[key].endTime * 1000
-        ).toLocaleString();
+      <Auction
+        auctionInfo={auctionInfo}
+        toggleDisplayAuction={toggleDisplayAuction}
+      />
+      <table style={blur ? style: null} >
+        <tr>
+          <th></th>
+          <th>Item</th>
+          <th>Ends</th>
+          <th>Current State</th>
+          <th>Max Bid</th>
+          <th>Winning Bid</th>
+        </tr>
+        {Object.keys(props.auctions).map(function(key) {
+          const labelId = `checkbox-list-label-${props.auctions[key].id}`;
+          const localeEndTime = new Date(
+            props.auctions[key].endTime * 1000
+          ).toLocaleString();
 
-        const auctionState =
-          auctionStateMappings[[props.auctions[key].currentState]]
-            .description;
+          const auctionState =
+            auctionStateMappings[[props.auctions[key].currentState]]
+              .description;
 
-        var thisIsAuctionOwner = `${
-          isAuctionOwner(key) ? "rowAuctionOwner" : ""
-        }`;
-        var thisIsAuctionMaxBidder = `${
-          isAuctionMaxBidder(key) ? "rowAuctionMaxBidder" : ""
-        }`;
-        var thisIsAuctionWinningBidder = `${
-          isAuctionWinningBidder(key) ? "rowAuctionWinningBidder" : ""
-        }`;
+          var thisIsAuctionOwner = `${
+            isAuctionOwner(key) ? "rowAuctionOwner" : ""
+          }`;
+          var thisIsAuctionMaxBidder = `${
+            isAuctionMaxBidder(key) ? "rowAuctionMaxBidder" : ""
+          }`;
+          var thisIsAuctionWinningBidder = `${
+            isAuctionWinningBidder(key) ? "rowAuctionWinningBidder" : ""
+          }`;
 
-        var rowClass = `${thisIsAuctionOwner} ${thisIsAuctionMaxBidder} ${thisIsAuctionWinningBidder}`;
-        return(
-          <tr
-            className={rowClass}
-            key={props.auctions[key].id}
-            onClick={eventHandlerWrapper(key)}
-          >
-            <Auction />
-            {/* <td 
+          var rowClass = `${thisIsAuctionOwner} ${thisIsAuctionMaxBidder} ${thisIsAuctionWinningBidder}`;
+          return(
+            <tr
+              className={rowClass}
               key={props.auctions[key].id}
-              checked={props.checked.indexOf(props.auctions[key].id) !== -1}
-            >
-              <input style={{width: '50px'}} type='checkbox'></input>
-            </td>
-            <td>{props.auctions[key].itemName}</td>
-            <td></td> */}
-
-          </tr>
-        )
-      })}
-    </table>
-      <TableContainer style={blur ? style: null} className='auction-table' component={Paper}>
-        <Table className={classes.table} aria-label="customized table">
-          <TableHead>
-            <StyledTableRow>
-              <StyledTableCell align="right"></StyledTableCell>
-              <StyledTableCell align="right">Item</StyledTableCell>
-              <StyledTableCell align="right">End Time</StyledTableCell>
-              <StyledTableCell align="right">Current State</StyledTableCell>
-              <StyledTableCell align="right">Max Bid</StyledTableCell>
-              <StyledTableCell align="right">Winning Bid</StyledTableCell>
-            </StyledTableRow>
-          </TableHead>
-          <TableBody>
-            {Object.keys(props.auctions).map(function(key) {
-              const labelId = `checkbox-list-label-${props.auctions[key].id}`;
-              const localeEndTime = new Date(
-                props.auctions[key].endTime * 1000
-              ).toLocaleString();
-
-              const auctionState =
-                auctionStateMappings[[props.auctions[key].currentState]]
-                  .description;
-
-              var thisIsAuctionOwner = `${
-                isAuctionOwner(key) ? "rowAuctionOwner" : ""
-              }`;
-              var thisIsAuctionMaxBidder = `${
-                isAuctionMaxBidder(key) ? "rowAuctionMaxBidder" : ""
-              }`;
-              var thisIsAuctionWinningBidder = `${
-                isAuctionWinningBidder(key) ? "rowAuctionWinningBidder" : ""
-              }`;
-
-              var rowClass = `${thisIsAuctionOwner} ${thisIsAuctionMaxBidder} ${thisIsAuctionWinningBidder}`;
-
-              return (
-                <StyledTableRow
-                  className={rowClass}
-                  key={props.auctions[key].id}
-                  onClick={eventHandlerWrapper(key)}
-                  // disabled={true}
-                >
-                  <StyledTableCell padding="checkbox">
-                    <Checkbox
-                      // onClick={eventHandlerWrapper(key)}
-                      // disabled={true}
-                      // onClick={props.handle(6)}
-                      // disabled={checked.length > 1 ? true : false}
-                      // onClick={e => onClick(e, datum)}
-                      edge="start"
-                      key={props.auctions[key].id}
-                      checked={
-                        props.checked.indexOf(props.auctions[key].id) !== -1
-                      }
-                      tabIndex={-1}
-                      disableRipple
-                      inputProps={{ "aria-labelledby": labelId }}
-                    />
-                  </StyledTableCell>
-                  <StyledTableCell align="right">
-                    {props.auctions[key].itemName}
-                  </StyledTableCell>
-                  <StyledTableCell align="right">{localeEndTime}</StyledTableCell>
-                  <StyledTableCell align="right">{auctionState}</StyledTableCell>
-                  <StyledTableCell align="right">
-                    {props.auctions[key].maxBid}
-                  </StyledTableCell>
-                  <StyledTableCell align="right">
-                    {props.auctions[key].winningBid}
-                  </StyledTableCell>
-                </StyledTableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              // onClick={eventHandlerWrapper(key)}
+              onClick={() => clickAuction(key, props.auctions[key])}
+              > 
+              <td
+                key={props.auctions[key].id}
+                checked={props.checked.indexOf(props.auctions[key].id) !== -1}
+              >
+                <input style={{width: '50px'}} type='checkbox'></input>
+              </td>
+              <td>{props.auctions[key].itemName}</td>
+              <td>{localeEndTime}</td>
+              <td>{auctionState}</td>
+              <td>{props.auctions[key].maxBid}</td>
+              <td>{props.auctions[key].winningBid}</td>
+            </tr>
+          )
+        })}
+      </table>
     </>
   );
 }
