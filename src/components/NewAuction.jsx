@@ -1,11 +1,5 @@
 import React from 'react';
 
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import Card from 'react-bootstrap/Card';
-
 export default function NewAuction(props) {
   const { 
     noneSelected, 
