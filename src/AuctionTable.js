@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import Auction from './components/Auction';
-import { auctionStateMappings } from "./auctionStateMappings";
+import { auctionStateMappings } from './auctionStateMappings';
 
 export default function AuctionTable(props) {
-  const { blur } = props;
+  const { blur, toggleDisplayBlur, changeHandler, bidAmount } = props;
   const [toggleDisplayAuction, setToggleDisplayAuction] = useState(false);
   const [auctionInfo, setAuctionInfo] = useState(null);
 
@@ -46,7 +46,7 @@ export default function AuctionTable(props) {
     }
     
     const style = {
-      filter: 'blur(2px)'
+      filter: 'blur(1px)'
     }
   
   function clickAuction(key, auctionObjectEvent) {
@@ -55,6 +55,7 @@ export default function AuctionTable(props) {
     console.log(eventHandlerWrapper(key));
     setAuctionInfo(auctionObjectEvent)
     setToggleDisplayAuction(toggleDisplayAuction ? false : true);
+    toggleDisplayBlur();
   }
 
   return (
@@ -62,6 +63,9 @@ export default function AuctionTable(props) {
       <Auction
         auctionInfo={auctionInfo}
         toggleDisplayAuction={toggleDisplayAuction}
+        toggleDisplayBlur={toggleDisplayBlur}
+        changeHandler={changeHandler}
+        bidAmount={bidAmount}
       />
       <table style={blur ? style: null} >
         <tr>
@@ -83,13 +87,13 @@ export default function AuctionTable(props) {
               .description;
 
           var thisIsAuctionOwner = `${
-            isAuctionOwner(key) ? "rowAuctionOwner" : ""
+            isAuctionOwner(key) ? 'rowAuctionOwner' : ''
           }`;
           var thisIsAuctionMaxBidder = `${
-            isAuctionMaxBidder(key) ? "rowAuctionMaxBidder" : ""
+            isAuctionMaxBidder(key) ? 'rowAuctionMaxBidder' : ''
           }`;
           var thisIsAuctionWinningBidder = `${
-            isAuctionWinningBidder(key) ? "rowAuctionWinningBidder" : ""
+            isAuctionWinningBidder(key) ? 'rowAuctionWinningBidder' : ''
           }`;
 
           var rowClass = `${thisIsAuctionOwner} ${thisIsAuctionMaxBidder} ${thisIsAuctionWinningBidder}`;

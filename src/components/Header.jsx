@@ -1,9 +1,9 @@
 import React from 'react';
 
 export default function Header(props) {
-  const { toggleDisplayNewAuction, blur } = props;
+  const { toggleAuction, blur } = props;
   const style = {
-    filter: 'blur(2px)'
+    filter: 'blur(1px)'
   }
   return(
     <div style={blur ? style: null} className='header flex wrap space-between'>
@@ -12,7 +12,7 @@ export default function Header(props) {
         <p>Developed by KryptoCraft</p>
       </div>
       <div>
-        <button className='shadow button-inverted' onClick={toggleDisplayNewAuction}>Start a Auction</button>
+        <button className='shadow button-inverted' onClick={toggleAuction}>Start a Auction</button>
       </div>
     </div>
   )

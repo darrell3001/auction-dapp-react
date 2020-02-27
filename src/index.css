@@ -6,6 +6,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+p {
+  margin: 0px;
+  
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -31,6 +36,9 @@ code {
 
 .space-between {
   justify-content: space-between;
+}
+.space-evenly {
+  justify-content: space-evenly;
 }
 
 .column {
@@ -61,14 +69,14 @@ code {
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
-}
-.new-auction section {
   width: 80vw;
+  max-width: 550px;
   background: rgba(255, 255, 255, 0.856);
   border: 3px solid rgb(206, 206, 206);
   border-radius: 10px;
 }
-.new-auction section div {
+
+.new-auction div {
   border-bottom: 1px solid rgba(141, 141, 141, 0.87);
   padding: 3%;
 }
@@ -78,8 +86,11 @@ input {
   border-radius: 5px;
   /* border-style: solid; */
   padding: 0 0 0 5px;
-
 }
+.inputBid {
+  width: 100px;
+}
+
 
 button {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

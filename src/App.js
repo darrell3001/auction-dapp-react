@@ -31,7 +31,8 @@ export default class App extends Component {
       displayNewAuction: false,
       bidAmount: 0,
       auctions: {},
-      currentStatus: ''
+      currentStatus: '',
+      triggerBlur: false
     };
 
     this.contract = 0;
@@ -45,11 +46,12 @@ export default class App extends Component {
     this.onChangeNewAuctionItemName = this.onChangeNewAuctionItemName.bind(this);
     this.onChangeNewAuctionDurationInMinutes = this.onChangeNewAuctionDurationInMinutes.bind(this);
     this.onClickNewAuctionButton = this.onClickNewAuctionButton.bind(this);
-    this.toggleDisplayNewAuction = this.toggleDisplayNewAuction.bind(this);
+    this.toggleDisplayBlur = this.toggleDisplayBlur.bind(this);
+    this.toggleAuction = this.toggleAuction.bind(this);
 
     this.onClickCheckBox = this.onClickCheckBox.bind(this);
     this.guid = this.guid.bind(this);
-    this.onChangeBidAmount = this.onChangeBidAmount.bind(this);
+    this.changeHandler = this.changeHandler.bind(this);
     this.onClickBidButton = this.onClickBidButton.bind(this);
     this.onClickPaymentButton = this.onClickPaymentButton.bind(this);
     this.onClickReceivedButton = this.onClickReceivedButton.bind(this);
@@ -294,20 +296,14 @@ export default class App extends Component {
   }
   //#endregion
 
-  //#region onChangeBidAmount()
-  onChangeBidAmount(e) {
-    console.log('onChangeBidAmount()');
-
-    this.setState({
-      bidAmount: e.target.value
-    });
+  //#region changeHandler()
+  changeHandler(e) {
+    this.setState({[e.target.name]: e.target.value});
   }
   //#endregion
 
   //#region onClickBidButton()
   onClickBidButton(e) {
-    console.log('onClickBidButton()');
-
     const methodName = 'bid';
     const guid = this.guid();
     const auctionId = this.state.checked['0'];
@@ -481,11 +477,20 @@ export default class App extends Component {
   }
   //#endregion
 
-  toggleDisplayNewAuction() {
+  toggleAuction() {
     if(this.state.displayNewAuction === true) {
       this.setState({displayNewAuction: false})
     } else {
       this.setState({displayNewAuction: true})
+    }
+    this.toggleDisplayBlur();
+  }
+
+  toggleDisplayBlur() {
+    if(this.state.triggerBlur === true) {
+      this.setState({triggerBlur: false})
+    } else if (this.state.triggerBlur === false) {
+      this.setState({triggerBlur: true})
     }
   }
 
@@ -530,15 +535,19 @@ export default class App extends Component {
     return (
       <Card>
         <Header 
-          toggleDisplayNewAuction={this.toggleDisplayNewAuction}
-          blur={this.state.displayNewAuction}
+          toggleAuction={this.toggleAuction}
+          blur={this.state.triggerBlur}
         />
         <AuctionTable
           fromAddress={this.state.fromAddress}
           auctions={this.state.auctions}
           handler={this.onClickCheckBox}
           checked={this.state.checked}
-          blur={this.state.displayNewAuction}
+          blur={this.state.triggerBlur}
+          toggleDisplayBlur={this.toggleDisplayBlur}
+          changeHandler={this.changeHandler}
+          bidAmount={this.state.bidAmount}
+          onClickBidButton={this.onClickBidButton}
         />
         <NewAuction 
           noneSelected={noneSelected}
@@ -548,7 +557,7 @@ export default class App extends Component {
           newAuctionItemName={this.state.newAuctionItemName}
           newAuctionDurationInMinutes={this.state.newAuctionDurationInMinutes}
           displayNewAuction={this.state.displayNewAuction}
-          toggleDisplayNewAuction={this.toggleDisplayNewAuction}
+          toggleAuction={this.toggleAuction}
         />
         <div id='BidderDiv'>
           <Form>
@@ -562,7 +571,7 @@ export default class App extends Component {
                     auctionOwnerIsSelected ||
                     !auctionStateInProgress
                   }
-                  onChange={e => this.onChangeBidAmount(e)}
+                  onChange={e => this.changeHandler(e)}
                 />
               </Col>
               <Button
