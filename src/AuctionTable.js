@@ -68,56 +68,60 @@ export default function AuctionTable(props) {
         bidAmount={bidAmount}
       />
       <table style={blur ? style: null} >
-        <tr>
-          <th></th>
-          <th>Item</th>
-          <th>Ends</th>
-          <th>Current State</th>
-          <th>Max Bid</th>
-          <th>Winning Bid</th>
-        </tr>
-        {Object.keys(props.auctions).map(function(key) {
-          const labelId = `checkbox-list-label-${props.auctions[key].id}`;
-          const localeEndTime = new Date(
-            props.auctions[key].endTime * 1000
-          ).toLocaleString();
-
-          const auctionState =
-            auctionStateMappings[[props.auctions[key].currentState]]
+        <thead>
+          <tr>
+            <th></th>
+            <th>Item</th>
+            <th>Ends</th>
+            <th>Current State</th>
+            <th>Max Bid</th>
+            <th>Winning Bid</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Object.keys(props.auctions).map(function(key) {
+            const labelId = `checkbox-list-label-${props.auctions[key].id}`;
+            const localeEndTime = new Date(
+              props.auctions[key].endTime * 1000
+              ).toLocaleString();
+              
+              const auctionState =
+              auctionStateMappings[[props.auctions[key].currentState]]
               .description;
+              
+              var thisIsAuctionOwner = `${
+                isAuctionOwner(key) ? 'rowAuctionOwner' : ''
+            }`;
+            var thisIsAuctionMaxBidder = `${
+              isAuctionMaxBidder(key) ? 'rowAuctionMaxBidder' : ''
+            }`;
+            var thisIsAuctionWinningBidder = `${
+              isAuctionWinningBidder(key) ? 'rowAuctionWinningBidder' : ''
+            }`;
 
-          var thisIsAuctionOwner = `${
-            isAuctionOwner(key) ? 'rowAuctionOwner' : ''
-          }`;
-          var thisIsAuctionMaxBidder = `${
-            isAuctionMaxBidder(key) ? 'rowAuctionMaxBidder' : ''
-          }`;
-          var thisIsAuctionWinningBidder = `${
-            isAuctionWinningBidder(key) ? 'rowAuctionWinningBidder' : ''
-          }`;
-
-          var rowClass = `${thisIsAuctionOwner} ${thisIsAuctionMaxBidder} ${thisIsAuctionWinningBidder}`;
-          return(
-            <tr
+            var rowClass = `${thisIsAuctionOwner} ${thisIsAuctionMaxBidder} ${thisIsAuctionWinningBidder}`;
+            return(
+              <tr
               className={rowClass}
               key={props.auctions[key].id}
-              // onClick={eventHandlerWrapper(key)}
-              onClick={() => clickAuction(key, props.auctions[key])}
-              > 
-              <td
-                key={props.auctions[key].id}
-                checked={props.checked.indexOf(props.auctions[key].id) !== -1}
-              >
-                <input style={{width: '50px'}} type='checkbox'></input>
-              </td>
-              <td>{props.auctions[key].itemName}</td>
-              <td>{localeEndTime}</td>
-              <td>{auctionState}</td>
-              <td>{props.auctions[key].maxBid}</td>
-              <td>{props.auctions[key].winningBid}</td>
-            </tr>
-          )
-        })}
+                // onClick={eventHandlerWrapper(key)}
+                onClick={() => clickAuction(key, props.auctions[key])}
+                > 
+                <td
+                  key={props.auctions[key].id}
+                  checked={props.checked.indexOf(props.auctions[key].id) !== -1}
+                  >
+                  <input style={{width: '50px'}} type='checkbox'></input>
+                </td>
+                <td>{props.auctions[key].itemName}</td>
+                <td>{localeEndTime}</td>
+                <td>{auctionState}</td>
+                <td>{props.auctions[key].maxBid}</td>
+                <td>{props.auctions[key].winningBid}</td>
+              </tr>
+            )
+          })}
+        </tbody>
       </table>
     </>
   );
