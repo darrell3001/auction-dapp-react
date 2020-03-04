@@ -50,6 +50,7 @@ export default class App extends Component {
     this.toggleAuction = this.toggleAuction.bind(this);
 
     this.onClickCheckBox = this.onClickCheckBox.bind(this);
+    this.clearOnClickCheckBox = this.clearOnClickCheckBox.bind(this);
     this.guid = this.guid.bind(this);
     this.changeHandler = this.changeHandler.bind(this);
     this.onClickBidButton = this.onClickBidButton.bind(this);
@@ -67,6 +68,11 @@ export default class App extends Component {
     this.timerPop = this.timerPop.bind(this);
   }
   //#endregion constructor
+
+  auctionOpen(id) {
+    console.log(id + 'id')
+    this.setState({checked: [id]})
+  }
 
   //#region getAuctionCount()
   getAuctionCount() {
@@ -377,12 +383,12 @@ export default class App extends Component {
   //#endregion
 
   //#region onClickDeleteButton()
-  onClickDeleteButton(e) {
+  onClickDeleteButton(id) {
     console.log('onClickDeleteButton()');
 
     const methodName = 'deleteAuction';
     const guid = this.guid();
-    const auctionId = this.state.checked['0'];
+    const auctionId = id[0];
     const payload = {
       from: this.state.fromAddress
     };
@@ -393,12 +399,13 @@ export default class App extends Component {
 
   //#region onClickCheckBox()
   onClickCheckBox(value) {
-    var currentIndex = this.state.checked.indexOf(value);
+    // console.count('you hit clickcheckbox', value)
+    let currentIndex = this.state.checked.indexOf(value);
 
     if (currentIndex == -1 && this.state.checked.length != 0) return;
 
-    var newChecked = [...this.state.checked];
-
+    let newChecked = [...this.state.checked];
+    // ! the issue right now is that verification occurs with value sent from auction info onClcik.
     if (currentIndex === -1) {
       newChecked.push(value);
     } else {
@@ -406,6 +413,10 @@ export default class App extends Component {
     }
 
     this.setState({ checked: newChecked });
+  }
+
+  clearOnClickCheckBox() {
+    this.setState({ checked: [] });
   }
   //#endregion
 
@@ -541,13 +552,25 @@ export default class App extends Component {
         <AuctionTable
           fromAddress={this.state.fromAddress}
           auctions={this.state.auctions}
-          handler={this.onClickCheckBox}
-          checked={this.state.checked}
           blur={this.state.triggerBlur}
           toggleDisplayBlur={this.toggleDisplayBlur}
           changeHandler={this.changeHandler}
           bidAmount={this.state.bidAmount}
           onClickBidButton={this.onClickBidButton}
+          buttons={{
+            onClickBidButton: this.onClickBidButton,
+            onClickPaymentButton: this.onClickPaymentButton,
+            onClickShippedButton: this.onClickShippedButton,
+            onClickEndButton: this.onClickEndButton,
+            onClickDeleteButton: this.onClickDeleteButton,
+            onClickReceivedButton: this.onClickReceivedButton
+          }}
+          // onClickCheckBox={this.onClickCheckBox}
+          checkedObj={{
+            checked: this.state.checked,
+            onClickCheckBox: this.onClickCheckBox,
+            clearOnClickCheckBox: this.clearOnClickCheckBox,
+          }}
         />
         <NewAuction 
           noneSelected={noneSelected}
@@ -558,39 +581,8 @@ export default class App extends Component {
           newAuctionDurationInMinutes={this.state.newAuctionDurationInMinutes}
           displayNewAuction={this.state.displayNewAuction}
           toggleAuction={this.toggleAuction}
-        />
-        <div id='BidderDiv'>
-          <Form>
-            <Form.Group as={Row}>
-              <Form.Label column>Bid:</Form.Label>
-              <Col>
-                <Form.Control
-                  type='numeric'
-                  disabled={
-                    !onlyOneSelected ||
-                    auctionOwnerIsSelected ||
-                    !auctionStateInProgress
-                  }
-                  onChange={e => this.changeHandler(e)}
-                />
-              </Col>
-              <Button
-                disabled={
-                  !onlyOneSelected ||
-                  auctionOwnerIsSelected ||
-                  !auctionStateInProgress
-                }
-                type='button'
-                variant='outline-primary'
-                className='btn'
-                onClick={e => this.onClickBidButton(e)}
-              >
-                Bid
-              </Button>
-            </Form.Group>
-          </Form>
-        </div>
 
+        />
         <div id='WinnerDiv'>
           <Button
             disabled={
