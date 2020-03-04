@@ -73,7 +73,7 @@ export default function Auction(props) {
           <h4>Auction options:</h4>
           <button className='button-inverted' onClick={() => onClickEndButton()}>End</button>
           <button className='button-inverted' onClick={() => onClickShippedButton()}>Shipped</button>
-          <button className='button-inverted' onClick={(e) => onClickDeleteButton(e)}>Delete</button>
+          <button className='button-inverted' onClick={() => onClickDeleteButton()}>Delete</button>
         </div>
 
         <div className='center'>

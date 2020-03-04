@@ -383,16 +383,16 @@ export default class App extends Component {
   //#endregion
 
   //#region onClickDeleteButton()
-  onClickDeleteButton(id) {
+  onClickDeleteButton() {
     console.log('onClickDeleteButton()');
-
+    console.log(this);
     const methodName = 'deleteAuction';
     const guid = this.guid();
-    const auctionId = id[0];
+    const auctionId = this.state.checked[0];
     const payload = {
       from: this.state.fromAddress
     };
-
+    console.log({methodName, auctionId, guid, payload})
     this.methodSend(methodName, auctionId, guid, payload);
   }
   //#endregion
@@ -482,12 +482,12 @@ export default class App extends Component {
   guid() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
       var r = (Math.random() * 16) | 0,
-        v = c == 'x' ? r : (r & 0x3) | 0x8;
+      v = c == 'x' ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
   }
   //#endregion
-
+  
   toggleAuction() {
     if(this.state.displayNewAuction === true) {
       this.setState({displayNewAuction: false})
@@ -507,7 +507,6 @@ export default class App extends Component {
 
   //#region main render()
   render() {
-    console.log('hello - render');
 
     const multiSelected = this.state.checked.length > 1 ? true : false;
     const onlyOneSelected = this.state.checked.length == 1 ? true : false;
