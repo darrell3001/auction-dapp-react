@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import { auctionStateMappings } from '../auctionStateMappings';
 
@@ -9,7 +9,9 @@ export default function Auction(props) {
     changeHandler, 
     bidAmount, 
     buttons,
-    checkedObj
+    checkedObj,
+    clickAuction,
+    whoIsThis
   } = props;
 
   const {
@@ -17,7 +19,7 @@ export default function Auction(props) {
     onClickCheckBox,
     clearOnClickCheckBox
   } = checkedObj;
-
+  
   const { 
     onClickBidButton, 
     onClickPaymentButton, 
@@ -26,35 +28,48 @@ export default function Auction(props) {
     onClickDeleteButton,
     onClickReceivedButton
   } = buttons;
-
-  let itemName, endTime, maxBid, winningBid, currentState, auctionState;
   
+  let who, itemName, endTime, maxBid, winningBid, currentState, auctionState, auctionStateNumber;
+  
+  if (auctionInfo != null) {
+    who = whoIsThis(auctionInfo[0]);
+  }
   // This protects against undefined.
   if (auctionInfo != null) {
+    console.log(auctionInfo + 'hit')
     itemName = auctionInfo.itemName;
     endTime = auctionInfo.endTime;
     maxBid = auctionInfo.maxBid;
     winningBid = auctionInfo.winningBid;
     currentState = auctionInfo.currentState;
     auctionState = auctionStateMappings[[currentState]].description;
+    auctionStateNumber = auctionStateMappings[[currentState]];
   }
-
+  
   const localeEndTime = new Date(endTime * 1000).toLocaleString();
-
-  useEffect(() => {
-  },[])
 
   // This pushes contract number into checked array upon auction toggle.
   if (toggleDisplayAuction && checked.length <= 0) {
     onClickCheckBox(auctionInfo[0]);
+    console.log(auctionInfo)
   } else if (!toggleDisplayAuction && checked.length === 1) {
     clearOnClickCheckBox()
+  }
+  
+  function show(state) {
+    console.log(auctionStateNumber)
+    console.log({state, currentState})
+    if (currentState == state) {
+      return {display: 'inline-block'};
+    } else {
+      return {display: 'none'};
+    }
   }
 
   return(
     <div 
-      className='new-auction'
-      style={{display: toggleDisplayAuction ? 'block' : 'none'}}
+    className='new-auction'
+    style={{display: toggleDisplayAuction ? 'block' : 'none'}}
     >
         <div>
           <h4>{itemName}</h4>
@@ -69,23 +84,28 @@ export default function Auction(props) {
           </section>
         </div>
 
-        <div className='center'>
+        <div style={{display: (who === 'rowAuctionOwner') ? 'block' : 'none' }} className='center'>
           <h4>Auction options:</h4>
-          <button className='button-inverted' onClick={() => onClickEndButton()}>End</button>
-          <button className='button-inverted' onClick={() => onClickShippedButton()}>Shipped</button>
-          <button className='button-inverted' onClick={() => onClickDeleteButton()}>Delete</button>
+          <button style={show(0)} className='button-inverted' onClick={() => onClickEndButton()}>End</button>
+          <button style={show(2)} className='button-inverted' onClick={() => onClickShippedButton()}>Shipped</button>
+          <button style={show(4)} className='button-inverted' onClick={() => onClickDeleteButton()}>Delete</button>
         </div>
 
-        <div className='center'>
+        <div style={{display: (who === 'rowAuctionWinningBidder') ? 'block' : 'none' }} className='center'>
           <h4>Auction winner:</h4>
-          <button className='button-inverted' onClick={() => onClickPaymentButton()}>Payment</button>
-          <button className='button-inverted' onClick={() => onClickReceivedButton()}>Received</button>
+          <button style={show(1)} className='button-inverted' onClick={() => onClickPaymentButton()}>Payment</button>
+          <button style={show(3)} className='button-inverted' onClick={() => onClickReceivedButton()}>Received</button>
         </div>
 
         <div>
           <h4>It{'\''}s over at:{' '}</h4>
           <p className='inline'>{localeEndTime}</p>
         </div>
+
+        <div className='center'>
+        <button onClick={() => clickAuction()}>⏎</button>
+        </div>
+
     </div>
   )
 }

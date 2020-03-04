@@ -28,15 +28,15 @@
   color: #61dafb;
 }
 
-.rowAuctionOwner {
+#rowAuctionOwner {
   background-color: red;
 }
 
-.rowAuctionWinningBidder {
+#rowAuctionWinningBidder {
   background-color: green;
 }
 
-.rowAuctionMaxBidder {
+#rowAuctionMaxBidder {
   background-color: blue;
 }
 

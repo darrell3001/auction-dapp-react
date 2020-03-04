@@ -58,6 +58,7 @@ export default class App extends Component {
     this.onClickReceivedButton = this.onClickReceivedButton.bind(this);
     this.onClickShippedButton = this.onClickShippedButton.bind(this);
     this.onClickEndButton = this.onClickEndButton.bind(this);
+    this.onClickDeleteButton = this.onClickDeleteButton.bind(this);
 
     this.isAuctionOwnerSelected = this.isAuctionOwnerSelected.bind(this);
     this.isAuctionWinningBidderSelected = this.isAuctionWinningBidderSelected.bind(
@@ -317,6 +318,7 @@ export default class App extends Component {
       from: this.state.fromAddress,
       value: window.web3.utils.toWei(this.state.bidAmount.toString(), 'wei')
     };
+    this.setState({bidAmount: ''});
 
     this.methodSend(methodName, auctionId, guid, payload);
   }
@@ -543,7 +545,7 @@ export default class App extends Component {
       this.canAuctionBeEnded(this.state.auctions[this.state.checked[0]]);
 
     return (
-      <Card>
+      <div className='flex column'>
         <Header 
           toggleAuction={this.toggleAuction}
           blur={this.state.triggerBlur}
@@ -555,7 +557,6 @@ export default class App extends Component {
           toggleDisplayBlur={this.toggleDisplayBlur}
           changeHandler={this.changeHandler}
           bidAmount={this.state.bidAmount}
-          onClickBidButton={this.onClickBidButton}
           buttons={{
             onClickBidButton: this.onClickBidButton,
             onClickPaymentButton: this.onClickPaymentButton,
@@ -564,7 +565,6 @@ export default class App extends Component {
             onClickDeleteButton: this.onClickDeleteButton,
             onClickReceivedButton: this.onClickReceivedButton
           }}
-          // onClickCheckBox={this.onClickCheckBox}
           checkedObj={{
             checked: this.state.checked,
             onClickCheckBox: this.onClickCheckBox,
@@ -582,60 +582,7 @@ export default class App extends Component {
           toggleAuction={this.toggleAuction}
 
         />
-        <div id='WinnerDiv'>
-          <Button
-            disabled={
-              !auctionWinningBidderIsSelected || !auctionStateAwaitingPayment
-            }
-            type='button'
-            variant='outline-primary'
-            className='btn float-left mr-2'
-            onClick={e => this.onClickPaymentButton(e)}
-          >
-            Payment
-          </Button>
-          <Button
-            disabled={
-              !auctionWinningBidderIsSelected || !auctionStateAwaitingDelivery
-            }
-            type='button'
-            variant='outline-primary'
-            className='btn float-left mr-2'
-            onClick={e => this.onClickReceivedButton(e)}
-          >
-            Received
-          </Button>
-        </div>
-        <div id='OwnerDiv'>
-          <Button
-            disabled={!auctionOwnerIsSelected || !auctionStateAwaitingShipment}
-            type='button'
-            variant='outline-primary'
-            className='btn float-left mr-2'
-            onClick={e => this.onClickShippedButton(e)}
-          >
-            Shipped
-          </Button>
-          <Button
-            disabled={!auctionOwnerIsSelected || !auctionCanBeEnded}
-            type='button'
-            variant='outline-primary'
-            className='btn float-left mr-2'
-            onClick={e => this.onClickEndButton(e)}
-          >
-            End
-          </Button>
-          <Button
-            disabled={!auctionOwnerIsSelected || !auctionStateComplete}
-            type='button'
-            variant='outline-primary'
-            className='btn float-left mr-2'
-            onClick={e => this.onClickDeleteButton(e)}
-          >
-            Delete
-          </Button>
-        </div>
-      </Card>
+      </div>
     );
   }
   //#endregion main render()

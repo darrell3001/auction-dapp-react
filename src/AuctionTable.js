@@ -63,7 +63,7 @@ export default function AuctionTable(props) {
     } else if (isAuctionWinningBidder(key)) {
       return 'rowAuctionWinningBidder'
     } else {
-      return null
+      return;
     }
   }
 
@@ -76,7 +76,7 @@ export default function AuctionTable(props) {
     // console.log({key});
     // console.log(eventHandlerWrapper(key));
     console.log({auctionObjectEvent})
-    setAuctionInfo(auctionObjectEvent)
+    if (!!auctionObjectEvent) setAuctionInfo(auctionObjectEvent);
     setToggleDisplayAuction(toggleDisplayAuction ? false : true);
     toggleDisplayBlur();
   }
@@ -91,8 +91,10 @@ export default function AuctionTable(props) {
         bidAmount={bidAmount}
         buttons={buttons}
         checkedObj={checkedObj}
+        clickAuction={clickAuction}
+        whoIsThis={whoIsThis}
       />
-      <table style={blur ? style: null} >
+      <table className='auction-table' style={blur ? style: null} >
         <thead>
           <tr>
             <th></th>
@@ -118,17 +120,18 @@ export default function AuctionTable(props) {
 
             return(
               <tr
-              className={whoIsThis(key)}
+              id={whoIsThis(key)}
+              className='auction-row'
               key={props.auctions[key].id}
                 // onClick={() => eventHandlerWrapper(key)}
                 onClick={() => clickAuction(props.auctions[key])}
                 > 
-                <td
+                {/* <td
                   key={props.auctions[key].id}
                   checked={checked.indexOf(props.auctions[key].id) !== -1}
                   >
                   <input style={{width: '50px'}} type='checkbox'></input>
-                </td>
+                </td> */}
                 <td>{props.auctions[key].itemName}</td>
                 <td>{localeEndTime}</td>
                 <td>{auctionState}</td>
