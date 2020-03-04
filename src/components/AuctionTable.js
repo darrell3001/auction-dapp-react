@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Auction from './components/Auction';
-import { auctionStateMappings } from './auctionStateMappings';
+import Auction from './Auction';
+import { auctionStateMappings } from '../helpers/auctionStateMappings';
 
 export default function AuctionTable(props) {
   const { 
@@ -11,14 +11,8 @@ export default function AuctionTable(props) {
     buttons, 
     checkedObj
   } = props;
-
-  const { checked } = checkedObj;
   const [toggleDisplayAuction, setToggleDisplayAuction] = useState(false);
   const [auctionInfo, setAuctionInfo] = useState(null);
-
-  // const eventHandlerWrapper = value => {
-  //   props.onClickCheckBox(value);
-  // };
 
   function isAuctionOwner(value) {
     if (
@@ -33,14 +27,14 @@ export default function AuctionTable(props) {
   
   function isAuctionWinningBidder(value) {
     if (
-      props.fromAddress.toUpperCase() ==
-      props.auctions[value].winningBidder.toUpperCase()
-      ) {
-        return true;
-      } else {
-        return false;
-      }
+    props.fromAddress.toUpperCase() ==
+    props.auctions[value].winningBidder.toUpperCase()
+    ) {
+      return true;
+    } else {
+      return false;
     }
+  }
     
   function isAuctionMaxBidder(value) {
     if (
@@ -53,8 +47,7 @@ export default function AuctionTable(props) {
         return false;
       }
     }
-  
-  // Returns a className
+
   function whoIsThis(key) {
     if (isAuctionOwner(key)) {
       return 'rowAuctionOwner'
@@ -66,16 +59,13 @@ export default function AuctionTable(props) {
       return;
     }
   }
-
-  const style = {
-    filter: 'blur(1px)'
-  }
   
+  /**
+   * @param auctionObjectEvent Data to populate Auction component.
+   * @function setToggleDisplayAuction Toggles display state.
+   * @function toggleDisplayBlur Toggles blur effect.
+   */
   function clickAuction(auctionObjectEvent) {
-    // eventHandlerWrapper(key);
-    // console.log({key});
-    // console.log(eventHandlerWrapper(key));
-    console.log({auctionObjectEvent})
     if (!!auctionObjectEvent) setAuctionInfo(auctionObjectEvent);
     setToggleDisplayAuction(toggleDisplayAuction ? false : true);
     toggleDisplayBlur();
@@ -94,10 +84,9 @@ export default function AuctionTable(props) {
         clickAuction={clickAuction}
         whoIsThis={whoIsThis}
       />
-      <table className='auction-table' style={blur ? style: null} >
+      <table className='auction-table' style={blur ? {filter: 'blur(1px)'} : null} >
         <thead>
           <tr>
-            <th></th>
             <th>Item</th>
             <th>Ends</th>
             <th>Current State</th>
@@ -107,31 +96,19 @@ export default function AuctionTable(props) {
         </thead>
         <tbody>
           {Object.keys(props.auctions).map(function(key) {
-            // console.log(props.auctions[key])
-            const labelId = `checkbox-list-label-${props.auctions[key].id}`;
             const localeEndTime = new Date(
               props.auctions[key].endTime * 1000
               ).toLocaleString();
-              
               const auctionState =
               auctionStateMappings[[props.auctions[key].currentState]]
               .description;
-              
-
             return(
               <tr
-              id={whoIsThis(key)}
-              className='auction-row'
-              key={props.auctions[key].id}
-                // onClick={() => eventHandlerWrapper(key)}
+                id={whoIsThis(key)}
+                className='auction-row'
+                key={props.auctions[key].id}
                 onClick={() => clickAuction(props.auctions[key])}
-                > 
-                {/* <td
-                  key={props.auctions[key].id}
-                  checked={checked.indexOf(props.auctions[key].id) !== -1}
-                  >
-                  <input style={{width: '50px'}} type='checkbox'></input>
-                </td> */}
+              >
                 <td>{props.auctions[key].itemName}</td>
                 <td>{localeEndTime}</td>
                 <td>{auctionState}</td>

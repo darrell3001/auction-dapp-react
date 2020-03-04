@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { auctionStateMappings } from '../auctionStateMappings';
+import { auctionStateMappings } from '../helpers/auctionStateMappings';
 
 export default function Auction(props) {
   const { 
@@ -57,8 +57,6 @@ export default function Auction(props) {
   }
   
   function show(state) {
-    console.log(auctionStateNumber)
-    console.log({state, currentState})
     if (currentState == state) {
       return {display: 'inline-block'};
     } else {

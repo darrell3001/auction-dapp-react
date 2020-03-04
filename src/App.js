@@ -2,19 +2,10 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
 import { SMART_CONTRACT_ABI, SMART_CONTRACT_ADDRESS } from './config';
-
-import './App.css';
-
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import Card from 'react-bootstrap/Card';
-
-import AuctionTable from './AuctionTable';
+import { auctionStateMappings } from './helpers/auctionStateMappings';
+import AuctionTable from './components/AuctionTable';
 import Header from './components/Header';
 import NewAuction from './components/NewAuction';
-import { auctionStateMappings } from './auctionStateMappings';
 
 //#endregion
 
@@ -172,7 +163,6 @@ export default class App extends Component {
           }, 5000);
         }
       })
-
       .on('data', event => {
         console.log(event.event + ' - id : ' + event.returnValues.id);
 
@@ -273,17 +263,13 @@ export default class App extends Component {
   //#region onClickNewAuctionButton()
   onClickNewAuctionButton(e) {
     console.log('onClickNewAuctionButton()');
-
     const methodName = 'createNewAuction';
     const guid = this.guid();
-
     const payload = {
       from: this.state.fromAddress
     };
-
     console.log(this.state.newAuctionItemName);
     console.log(this.state.newAuctionDurationInMinutes);
-
     this.contract.methods[methodName](
       this.state.newAuctionItemName,
       parseInt(this.state.newAuctionDurationInMinutes),
@@ -318,8 +304,7 @@ export default class App extends Component {
       from: this.state.fromAddress,
       value: window.web3.utils.toWei(this.state.bidAmount.toString(), 'wei')
     };
-    this.setState({bidAmount: ''});
-
+    this.setState({bidAmount: ''});//clears input upon bid.
     this.methodSend(methodName, auctionId, guid, payload);
   }
   //#endregion
@@ -327,14 +312,12 @@ export default class App extends Component {
   //#region onClickPaymentButton()
   onClickPaymentButton(e) {
     console.log('onClickPaymentButton()');
-
     const methodName = 'sendPayment';
     const guid = this.guid();
     const auctionId = this.state.checked['0'];
     const payload = {
       from: this.state.fromAddress
     };
-
     this.methodSend(methodName, auctionId, guid, payload);
   }
   //#endregion
@@ -342,14 +325,12 @@ export default class App extends Component {
   //#region onClickReceivedButton()
   onClickReceivedButton(e) {
     console.log('onClickReceivedButton()');
-
     const methodName = 'confirmDelivery';
     const guid = this.guid();
     const auctionId = this.state.checked['0'];
     const payload = {
       from: this.state.fromAddress
     };
-
     this.methodSend(methodName, auctionId, guid, payload);
   }
   //#endregion
@@ -357,14 +338,12 @@ export default class App extends Component {
   //#region onClickShippedButton()
   onClickShippedButton(e) {
     console.log('onClickShippedButton()');
-
     const methodName = 'confirmShipment';
     const guid = this.guid();
     const auctionId = this.state.checked['0'];
     const payload = {
       from: this.state.fromAddress
     };
-
     this.methodSend(methodName, auctionId, guid, payload);
   }
   //#endregion
@@ -372,14 +351,12 @@ export default class App extends Component {
   //#region onClickEndButton()
   onClickEndButton(e) {
     console.log('onClickEndButton()');
-
     const methodName = 'endAuction';
     const guid = this.guid();
     const auctionId = this.state.checked['0'];
     const payload = {
       from: this.state.fromAddress
     };
-
     this.methodSend(methodName, auctionId, guid, payload);
   }
   //#endregion
@@ -387,33 +364,26 @@ export default class App extends Component {
   //#region onClickDeleteButton()
   onClickDeleteButton() {
     console.log('onClickDeleteButton()');
-    console.log(this);
     const methodName = 'deleteAuction';
     const guid = this.guid();
     const auctionId = this.state.checked[0];
     const payload = {
       from: this.state.fromAddress
     };
-    console.log({methodName, auctionId, guid, payload})
     this.methodSend(methodName, auctionId, guid, payload);
   }
   //#endregion
 
   //#region onClickCheckBox()
   onClickCheckBox(value) {
-    // console.count('you hit clickcheckbox', value)
     let currentIndex = this.state.checked.indexOf(value);
-
-    if (currentIndex == -1 && this.state.checked.length != 0) return;
-
     let newChecked = [...this.state.checked];
-    // ! the issue right now is that verification occurs with value sent from auction info onClcik.
+    if (currentIndex == -1 && this.state.checked.length != 0) return;
     if (currentIndex === -1) {
       newChecked.push(value);
     } else {
       newChecked.splice(currentIndex, 1);
     }
-
     this.setState({ checked: newChecked });
   }
 
@@ -439,8 +409,9 @@ export default class App extends Component {
   //#endregion
 
   isAuctionOwnerSelected() {
-    if (this.state.checked.length != 1) return false;
-
+    if (this.state.checked.length != 1) {
+      return false;
+    } 
     if (
       this.state.fromAddress.toUpperCase() ==
       this.state.auctions[this.state.checked[0]].owner.toUpperCase()
@@ -452,8 +423,9 @@ export default class App extends Component {
   }
 
   isAuctionWinningBidderSelected() {
-    if (this.state.checked.length != 1) return false;
-
+    if (this.state.checked.length != 1) {
+      return false;
+    }
     if (
       this.state.fromAddress.toUpperCase() ==
       this.state.auctions[this.state.checked[0]].winningBidder.toUpperCase()
@@ -466,17 +438,14 @@ export default class App extends Component {
 
   canAuctionBeEnded(auction) {
     const auctionEndTime = new Date(auction.endTime * 1000);
-
     if (auction.currentState == 0) {
       if (auction.maxBidder == 0) {
         return true;
       }
-
       if (auctionEndTime < new Date()) {
         return true;
       }
     }
-
     return false;
   }
 
@@ -509,47 +478,14 @@ export default class App extends Component {
 
   //#region main render()
   render() {
-
-    const multiSelected = this.state.checked.length > 1 ? true : false;
-    const onlyOneSelected = this.state.checked.length == 1 ? true : false;
     const noneSelected = this.state.checked.length == 0 ? true : false;
-
-    const auctionOwnerIsSelected =
-      onlyOneSelected && this.isAuctionOwnerSelected();
-
-    const auctionWinningBidderIsSelected =
-      onlyOneSelected && this.isAuctionWinningBidderSelected();
-
-    const auctionStateInProgress =
-      onlyOneSelected &&
-      this.state.auctions[this.state.checked[0]].currentState == 0;
-
-    const auctionStateAwaitingPayment =
-      onlyOneSelected &&
-      this.state.auctions[this.state.checked[0]].currentState == 1;
-
-    const auctionStateAwaitingShipment =
-      onlyOneSelected &&
-      this.state.auctions[this.state.checked[0]].currentState == 2;
-
-    const auctionStateAwaitingDelivery =
-      onlyOneSelected &&
-      this.state.auctions[this.state.checked[0]].currentState == 3;
-
-    const auctionStateComplete =
-      onlyOneSelected &&
-      this.state.auctions[this.state.checked[0]].currentState == 4;
-
-    const auctionCanBeEnded =
-      onlyOneSelected &&
-      this.canAuctionBeEnded(this.state.auctions[this.state.checked[0]]);
-
     return (
       <div className='flex column'>
         <Header 
           toggleAuction={this.toggleAuction}
           blur={this.state.triggerBlur}
         />
+        <hr className='shadow'/>
         <AuctionTable
           fromAddress={this.state.fromAddress}
           auctions={this.state.auctions}
@@ -585,6 +521,4 @@ export default class App extends Component {
       </div>
     );
   }
-  //#endregion main render()
 }
-//#endregion

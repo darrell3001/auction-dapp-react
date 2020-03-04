@@ -16,6 +16,10 @@ code {
     monospace;
 }
 
+hr {
+  width: 90vw;
+}
+
 .center {
   text-align: center;
 }
@@ -51,6 +55,7 @@ code {
 
 .header {
   /* max-width: 200px; */
+  width: 90vw;
 }
 
 .header div{
@@ -128,4 +133,16 @@ button:disabled {
 }
 .button-inverted:active {
   transform: translateY(1px);
+}
+
+#rowAuctionOwner {
+  background-color: red;
+}
+
+#rowAuctionWinningBidder {
+  background-color: green;
+}
+
+#rowAuctionMaxBidder {
+  background-color: blue;
 }
