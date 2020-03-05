@@ -29,7 +29,7 @@ export default function Auction(props) {
     onClickReceivedButton
   } = buttons;
   
-  let who, itemName, endTime, maxBid, winningBid, currentState, auctionState, auctionStateNumber;
+  let who, itemName, endTime, maxBid, winningBid, currentState, auctionState;
   
   if (auctionInfo != null) {
     who = whoIsThis(auctionInfo[0]);
@@ -43,7 +43,6 @@ export default function Auction(props) {
     winningBid = auctionInfo.winningBid;
     currentState = auctionInfo.currentState;
     auctionState = auctionStateMappings[[currentState]].description;
-    auctionStateNumber = auctionStateMappings[[currentState]];
   }
   
   const localeEndTime = new Date(endTime * 1000).toLocaleString();
@@ -76,7 +75,7 @@ export default function Auction(props) {
 
         <div className='flex space-evenly wrap'>
           <p>Current bid: <strong>Ę{maxBid}</strong></p>
-          <section className='center'>
+          <section  style={{display: (who === 'rowAuctionOwner') ? 'none' : 'block' }} className='center'>
             <input className='inputBid' type='number' name='bidAmount' value={bidAmount} onChange={(e) => changeHandler(e)}></input>
             <button className='button-inverted' onClick={() => onClickBidButton()}>Place bid</button>
           </section>
@@ -103,7 +102,6 @@ export default function Auction(props) {
         <div className='center'>
         <button onClick={() => clickAuction()}>⏎</button>
         </div>
-
     </div>
   )
 }
